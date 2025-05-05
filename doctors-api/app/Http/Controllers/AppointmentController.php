@@ -2,63 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
+
     public function index()
-    {
-        $appointments = Appointment::where('user_id', Auth::id())->get();
-        return response()->json($appointments);
-    }
+{
+    $appointments = Appointment::with(['doctor', 'patient'])->get();
+
+    return response()->json($appointments);
+}
+
+
 
     public function store(Request $request)
     {
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
-            'date' => 'required|date|after_or_equal:today',
-            'time' => 'required|date_format:H:i',
+            'appointment_time' => 'required|date|after:now',
         ]);
-
-        $exists = Appointment::where('doctor_id', $request->doctor_id)
-            ->where('date', $request->date)
-            ->where('time', $request->time)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['message' => 'هذا الموعد محجوز بالفعل.'], 409);
-        }
 
         $appointment = Appointment::create([
-            'user_id' => Auth::id(),
+            'patient_id' => Auth::id(),
             'doctor_id' => $request->doctor_id,
-            'date' => $request->date,
-            'time' => $request->time,
-            'status' => 'pending',
+            'appointment_time' => $request->appointment_time,
         ]);
 
-        return response()->json($appointment, 201);
+        return response()->json([
+            'message' => 'The appointment was created successfully.',
+            'appointment' => $appointment,
+        ], 201);
     }
 
-    public function show($id)
+    public function myAppointments()
     {
-        $appointment = Appointment::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $appointments = Appointment::where('patient_id', Auth::id())->with('doctor')->get();
 
-        return response()->json($appointment);
+        return response()->json($appointments);
     }
 
-    public function destroy($id)
+    public function doctorAppointments()
     {
-        $appointment = Appointment::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $appointments = Appointment::where('doctor_id', Auth::id())->with('patient')->get();
 
-        $appointment->delete();
+        return response()->json($appointments);
+    }
 
-        return response()->json(['message' => 'تم حذف الموعد بنجاح.']);
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,cancelled',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+
+        if ($appointment->doctor_id !== Auth::id()) {
+            return response()->json(['message' => 'You are not allowed'], 403);
+        }
+
+        $appointment->status = $request->status;
+        $appointment->save();
+
+        return response()->json([
+            'message' => 'Status updated',
+            'appointment' => $appointment,
+        ]);
     }
 }
