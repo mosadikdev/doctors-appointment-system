@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -23,6 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    
+
+
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
@@ -34,7 +39,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         return response()->json(['message' => 'Hello admin']);
     });
 
-    Route::get('/admin/users', [AdminController::class, 'getAllUsers']);
+    Route::get('/admin/users', [AdminController::class, 'allUsers']);
+    Route::post('/admin/add-user', [AdminController::class, 'addUser']);
+    Route::get('/admin/users/{id}', [AdminController::class, 'getUser']);
+    Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
 });
 
 Route::middleware(['auth:sanctum', 'role:doctor'])->group(function () {
@@ -43,6 +52,7 @@ Route::middleware(['auth:sanctum', 'role:doctor'])->group(function () {
     });
 
     Route::get('/doctor/appointments', [DoctorController::class, 'myAppointments']);
+    Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
 });
 
 Route::middleware(['auth:sanctum', 'role:patient'])->group(function () {
@@ -50,5 +60,9 @@ Route::middleware(['auth:sanctum', 'role:patient'])->group(function () {
         return response()->json(['message' => 'Hello Patient']);
     });
 
+    Route::get('/doctors', [DoctorController::class, 'index']);
     Route::post('/patient/appointments', [PatientController::class, 'bookAppointment']);
+    Route::get('/patient/appointments', [AppointmentController::class, 'myAppointments']);
+
+
 });
