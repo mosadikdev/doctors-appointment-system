@@ -8,6 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
+    public function index()
+{
+    $doctors = \App\Models\User::where('role', 'doctor')->get();
+
+    return response()->json([
+        'doctors' => $doctors
+    ]);
+}
+
     public function dashboard()
     {
         return response()->json(['message' => 'Welcome Doctor!']);

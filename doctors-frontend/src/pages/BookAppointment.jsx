@@ -25,7 +25,7 @@ function BookAppointment() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:8000/api/appointments",
         {
           doctor_id: selectedDoctor,
@@ -45,36 +45,63 @@ function BookAppointment() {
   };
 
   return (
-    <div>
-      <h2>📆 Book an appointment</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Choosing a doctor:</label>
-          <select
-            value={selectedDoctor}
-            onChange={(e) => setSelectedDoctor(e.target.value)}
-            required
+    <div className="max-w-xl mx-auto px-4 py-10">
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+        📆 Book an Appointment
+      </h2>
+
+      <div className="bg-white shadow-md rounded-2xl p-6 border">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Choosing a doctor
+            </label>
+            <select
+              value={selectedDoctor}
+              onChange={(e) => setSelectedDoctor(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            >
+              <option value="">-- Choose a doctor --</option>
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>
+                  {doctor.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Appointment time
+            </label>
+            <input
+              type="datetime-local"
+              value={appointmentTime}
+              onChange={(e) => setAppointmentTime(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
           >
-            <option value="">--Choose a doctor--</option>
-            {doctors.map((doctor) => (
-              <option key={doctor.id} value={doctor.id}>
-                {doctor.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>time:</label>
-          <input
-            type="datetime-local"
-            value={appointmentTime}
-            onChange={(e) => setAppointmentTime(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Book an appointment</button>
-      </form>
-      {message && <p>{message}</p>}
+            Book Appointment
+          </button>
+        </form>
+
+        {message && (
+          <p
+            className={`mt-4 text-center font-medium ${
+              message.startsWith("✅") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

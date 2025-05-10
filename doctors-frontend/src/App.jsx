@@ -16,41 +16,58 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 
   return (
     <div>
-      <nav style={{ marginBottom: '20px' }}>
-        {!token ? (
-          <>
-            <Link to="/login">Login</Link> | <Link to="/register">Sign up</Link>
-          </>
-        ) : (
-          <>
-          {user?.role === "admin" && (
-  <Link to="/admin" className="text-sm text-blue-500">dashboard</Link>
-)}
-
-          {user?.role === "patient" && (
-  <>
-            <Link to="/doctors">Doctors</Link> |{' '}
-            </>
-)}
-            {user?.role === "patient" && (
-  <>
-    <Link to="/book">Book</Link> |{" "}
-  </>
-)}
-
-{(user?.role === "patient" || user?.role === "doctor")  && (
-  <>
-            <Link to="/my-appointments">My appointments</Link>
-            </>
-)}
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        )}
+      <nav className="bg-blue-600 p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* Logo */}
+          <Link to="/" className="text-white font-bold text-2xl">
+            Doctors Appointement system
+          </Link>
+          
+          {/* Navigation Links */}
+          <div className="space-x-4 hidden md:flex">
+            {!token ? (
+              <>
+                <Link to="/login" className="text-white">Login</Link> | 
+                <Link to="/register" className="text-white">Sign up</Link>
+              </>
+            ) : (
+              <>
+                {user?.role === "admin" && (
+                  <Link to="/admin" className="text-white">Admin Dashboard</Link>
+                )}
+                
+                {user?.role === "patient" && (
+                  <>
+                    <Link to="/doctors" className="text-white">Doctors</Link> | 
+                    <Link to="/book" className="text-white">Book Appointment</Link> | 
+                    <Link to="/my-appointments" className="text-white">My Appointments</Link>
+                  </>
+                )}
+                
+                {user?.role === "doctor" && (
+                  <Link to="/doctor-appointments" className="text-white">Doctor Appointments</Link>
+                )}
+                
+                <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+          
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden">
+            <button className="text-white" onClick={() => { /* Add mobile menu toggle logic here */ }}>
+              ☰
+            </button>
+          </div>
+        </div>
       </nav>
 
       <Routes>

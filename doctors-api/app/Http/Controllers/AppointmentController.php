@@ -71,4 +71,19 @@ class AppointmentController extends Controller
             'appointment' => $appointment,
         ]);
     }
+
+    public function confirm($id)
+{
+    $appointment = \App\Models\Appointment::find($id);
+
+    if (!$appointment) {
+        return response()->json(['message' => 'Appointment not found'], 404);
+    }
+
+    $appointment->status = 'confirmed';
+    $appointment->save();
+
+    return response()->json(['message' => 'Appointment confirmed successfully']);
+}
+
 }
