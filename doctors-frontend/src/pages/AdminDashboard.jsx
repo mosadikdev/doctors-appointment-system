@@ -5,18 +5,32 @@ import { Link } from "react-router-dom";
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: 0,
+    admins: 0,
+    doctors: 0,
+    patients: 0,
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await axios.get("http://localhost:8000/api/admin/users", {
+        const res = await axios.get("http://localhost:8000/api/admin/allusers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUsers(res.data);
+
+        const data = res.data;
+        setUsers(data);
+        setStats({
+          total: data.length,
+          admins: data.filter((u) => u.role === "admin").length,
+          doctors: data.filter((u) => u.role === "doctor").length,
+          patients: data.filter((u) => u.role === "patient").length,
+        });
       } catch (err) {
         console.error("Failed to fetch users:", err);
         alert("Something went wrong while fetching users.");
@@ -49,9 +63,33 @@ function AdminDashboard() {
   if (loading) return <p className="text-center text-gray-500">Loading data...</p>;
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Welcome message */}
+      <h1 className="text-3xl font-bold mb-6 text-blue-700">👋 Welcome, Admin!</h1>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-xl shadow p-4 border border-gray-200 text-center">
+          <p className="text-gray-500">Total Users</p>
+          <h2 className="text-2xl font-semibold">{stats.total}</h2>
+        </div>
+        <div className="bg-white rounded-xl shadow p-4 border border-gray-200 text-center">
+          <p className="text-gray-500">Admins</p>
+          <h2 className="text-2xl font-semibold">{stats.admins}</h2>
+        </div>
+        <div className="bg-white rounded-xl shadow p-4 border border-gray-200 text-center">
+          <p className="text-gray-500">Doctors</p>
+          <h2 className="text-2xl font-semibold">{stats.doctors}</h2>
+        </div>
+        <div className="bg-white rounded-xl shadow p-4 border border-gray-200 text-center">
+          <p className="text-gray-500">Patients</p>
+          <h2 className="text-2xl font-semibold">{stats.patients}</h2>
+        </div>
+      </div>
+
+      {/* Users Table */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">🛡️ Admin Dashboard</h2>
+        <h2 className="text-2xl font-bold">🛡️ Manage Users</h2>
         <Link
           to="/admin/add-user"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"

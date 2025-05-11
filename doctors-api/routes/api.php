@@ -39,11 +39,13 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         return response()->json(['message' => 'Hello admin']);
     });
 
-    Route::get('/admin/users', [AdminController::class, 'allUsers']);
+    Route::get('/admin/allusers', [AdminController::class, 'allUsers']);
     Route::post('/admin/add-user', [AdminController::class, 'addUser']);
     Route::get('/admin/users/{id}', [AdminController::class, 'getUser']);
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+    Route::get('/admin/stats', [AdminController::class, 'getStats']);
+
 });
 
 Route::middleware(['auth:sanctum', 'role:doctor'])->group(function () {

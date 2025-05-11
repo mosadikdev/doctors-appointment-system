@@ -8,6 +8,7 @@ import DoctorAppointments from './pages/DoctorAppointments';
 import AdminDashboard from './pages/AdminDashboard';
 import AddUser from './pages/AddUser';
 import EditUser from './pages/EditUser';
+import AdminHome from './pages/AdminHome';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -39,8 +40,12 @@ function App() {
             ) : (
               <>
                 {user?.role === "admin" && (
-                  <Link to="/admin" className="text-white">Admin Dashboard</Link>
-                )}
+  <>
+    <Link to="/admin" className="text-white">Dashboard</Link>
+    <Link to="/admin/users" className="text-white">Users</Link>
+  </>
+)}
+
                 
                 {user?.role === "patient" && (
                   <>
@@ -63,7 +68,7 @@ function App() {
           
           {/* Mobile Menu Toggle */}
           <div className="md:hidden">
-            <button className="text-white" onClick={() => { /* Add mobile menu toggle logic here */ }}>
+            <button className="text-white" onClick={() => { }}>
               ☰
             </button>
           </div>
@@ -77,9 +82,10 @@ function App() {
         <Route path="/book" element={<BookAppointment />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/doctor-appointments" element={<DoctorAppointments />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/add-user" element={<AddUser />} />
-        <Route path="/admin/edit-user/:id" element={<EditUser />} />
+        <Route path="/admin" element={<AdminHome />} />
+  <Route path="/admin/users" element={<AdminDashboard />} />
+  <Route path="/admin/add-user" element={<AddUser />} />
+  <Route path="/admin/edit-user/:id" element={<EditUser />} />
       </Routes>
     </div>
   );

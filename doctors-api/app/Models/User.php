@@ -59,4 +59,10 @@ public function isPatient()
     return $this->role === 'patient';
 }
 
+public function tickets()
+{
+    return $this->hasMany(Ticket::class);
+}
+
+
 }

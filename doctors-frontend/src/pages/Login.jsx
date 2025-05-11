@@ -12,18 +12,28 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const res = await axios.post('/login', form);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      navigate('/doctors');
-    } catch (err) {
-      setError('❌ Incorrect email or password.');
-      console.error(err.response?.data || err.message);
+  e.preventDefault();
+  setError('');
+  try {
+    const res = await axios.post('/login', form);
+    localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.user));
+
+    const role = res.data.user.role;
+
+    if (role === 'admin') {
+      navigate('/admin');
+    } else if (role === 'doctor') {
+      navigate('/doctor-appointments');
+    } else {
+      navigate('/my-appointments');
     }
-  };
+  } catch (err) {
+    setError('❌ Incorrect email or password.');
+    console.error(err.response?.data || err.message);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
