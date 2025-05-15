@@ -65,4 +65,15 @@ public function tickets()
 }
 
 
+public function doctor()
+{
+    return $this->belongsTo(User::class, 'doctor_id');
+}
+
+public function patients()
+{
+    return $this->hasMany(User::class, 'doctor_id');
+}
+
+
 }

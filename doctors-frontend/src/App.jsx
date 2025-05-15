@@ -9,6 +9,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AddUser from './pages/AddUser';
 import EditUser from './pages/EditUser';
 import AdminHome from './pages/AdminHome';
+import PatientDashboard from './pages/PatientDashboard';
+import DoctorDashboard from './pages/DoctorDashboard';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -26,9 +28,24 @@ function App() {
       <nav className="bg-blue-600 p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="text-white font-bold text-2xl">
-            Doctors Appointement system
-          </Link>
+          <span
+  onClick={() => {
+    if (!token) {
+      navigate('/');
+    } else if (user?.role === 'admin') {
+      navigate('/admin');
+    } else if (user?.role === 'doctor') {
+      navigate('/doctor/dashboard');
+    } else if (user?.role === 'patient') {
+      navigate('/patient/dashboard');
+    } else {
+      navigate('/');
+    }
+  }}
+  className="text-white font-bold text-2xl cursor-pointer"
+>
+  Doctors Appointment System
+</span>
           
           {/* Navigation Links */}
           <div className="space-x-4 hidden md:flex">
@@ -46,6 +63,14 @@ function App() {
   </>
 )}
 
+{user?.role === "patient" && (
+  <Link to="/patient/dashboard" className="text-white">Dashboard</Link>
+)}
+
+{user?.role === "doctor" && (
+  <Link to="/doctor/dashboard" className="text-white">Dashboard</Link>
+)}
+
                 
                 {user?.role === "patient" && (
                   <>
@@ -56,8 +81,10 @@ function App() {
                 )}
                 
                 {user?.role === "doctor" && (
-                  <Link to="/doctor-appointments" className="text-white">Doctor Appointments</Link>
+                  <Link to="/doctor/appointments" className="text-white">Doctor Appointments</Link>
                 )}
+
+                
                 
                 <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                   Logout
@@ -81,11 +108,13 @@ function App() {
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/book" element={<BookAppointment />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
-        <Route path="/doctor-appointments" element={<DoctorAppointments />} />
+        <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path="/admin" element={<AdminHome />} />
-  <Route path="/admin/users" element={<AdminDashboard />} />
-  <Route path="/admin/add-user" element={<AddUser />} />
-  <Route path="/admin/edit-user/:id" element={<EditUser />} />
+        <Route path="/admin/users" element={<AdminDashboard />} />
+        <Route path="/admin/add-user" element={<AddUser />} />
+        <Route path="/admin/edit-user/:id" element={<EditUser />} />
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
       </Routes>
     </div>
   );
