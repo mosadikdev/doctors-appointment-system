@@ -5,8 +5,6 @@ import axios from "axios";
 function AdminHome() {
   const [stats, setStats] = useState({
     total_users: 0,
-    open_tickets: 0,
-    closed_tickets: 0,
   });
 
   const token = localStorage.getItem("token");
@@ -33,14 +31,6 @@ function AdminHome() {
         <div className="bg-green-100 text-green-800 p-4 rounded shadow">
           <h4 className="text-sm font-medium">Total Users</h4>
           <p className="text-2xl font-bold">{stats.total_users}</p>
-        </div>
-        <div className="bg-yellow-100 text-yellow-800 p-4 rounded shadow">
-          <h4 className="text-sm font-medium">Open Tickets</h4>
-          <p className="text-2xl font-bold">{stats.open_tickets}</p>
-        </div>
-        <div className="bg-blue-100 text-blue-800 p-4 rounded shadow">
-          <h4 className="text-sm font-medium">Closed Tickets</h4>
-          <p className="text-2xl font-bold">{stats.closed_tickets}</p>
         </div>
       </div>
 

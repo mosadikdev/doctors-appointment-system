@@ -11,6 +11,7 @@ import EditUser from './pages/EditUser';
 import AdminHome from './pages/AdminHome';
 import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
+import Home from './pages/Home';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -115,6 +116,7 @@ function App() {
         <Route path="/admin/edit-user/:id" element={<EditUser />} />
         <Route path="/patient/dashboard" element={<PatientDashboard />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </div>
   );

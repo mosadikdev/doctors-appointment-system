@@ -22,17 +22,20 @@ export default function Login() {
     const role = res.data.user.role;
 
     if (role === 'admin') {
-      navigate('/admin');
+      navigate('/admin'); 
     } else if (role === 'doctor') {
-      navigate('/doctor-appointments');
+      navigate('/doctor/dashboard');
+    } else if (role === 'patient') {
+      navigate('/patient/dashboard'); 
     } else {
-      navigate('/my-appointments');
+      navigate('/');
     }
   } catch (err) {
     setError('❌ Incorrect email or password.');
     console.error(err.response?.data || err.message);
   }
 };
+
 
 
   return (

@@ -1,0 +1,36 @@
+[33mcommit b30354fcb3001b0c4daf5f724b6da52bd083f4bf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: mosadikdev <mohamedsadik.dev@gmail.com>
+Date:   Sun May 11 16:40:54 2025 +0100
+
+    Add AdminHome page and update admin routing
+
+[33mcommit 6bd3f6940644784357d95c9c7069074bc0aa6564[m
+Author: mosadikdev <mohamedsadik.dev@gmail.com>
+Date:   Sat May 10 12:31:40 2025 +0100
+
+    Add TailwindCSS to all pages for enhanced UI/UX design
+    
+    - Integrated TailwindCSS across all pages of the application.
+    - Improved navigation bar (navbar) with better styling, responsiveness, and hover effects.
+    - Refined admin dashboard for better user interaction and clarity.
+    - Enhanced styling of doctor and patient-related pages with cleaner layouts and modern design.
+    - Added mobile-friendly design to ensure a seamless user experience on smaller devices.
+    - Implemented Tailwind utility classes for consistent spacing, colors, and typography across all components.
+
+[33mcommit 5b49cbffde22faa81622905c4bd6e971e406092d[m
+Author: mosadikdev <mohamedsadik.dev@gmail.com>
+Date:   Wed May 7 19:08:06 2025 +0100
+
+    Implemented full authentication system, private route protection, patient appointment booking, doctor appointment view, and admin dashboard with user management (add/edit/delete users)
+
+[33mcommit b3ce15129ca8e4ca2985c8168969cff0be67ef3c[m
+Author: mosadikdev <mohamedsadik.dev@gmail.com>
+Date:   Mon May 5 20:34:48 2025 +0100
+
+    feat: Add permissions, create appointments, and connect React to the API
+
+[33mcommit e5830d579803d646f3ea2477f2f4ff67c613ec65[m
+Author: mosadikdev <mohamedsadik.dev@gmail.com>
+Date:   Sun May 4 13:59:58 2025 +0100
+
+    Initial commit
