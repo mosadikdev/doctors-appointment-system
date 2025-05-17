@@ -12,6 +12,7 @@ import AdminHome from './pages/AdminHome';
 import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -64,9 +65,7 @@ function App() {
   </>
 )}
 
-{user?.role === "patient" && (
-  <Link to="/patient/dashboard" className="text-white">Dashboard</Link>
-)}
+
 
 {user?.role === "doctor" && (
   <Link to="/doctor/dashboard" className="text-white">Dashboard</Link>
@@ -75,9 +74,11 @@ function App() {
                 
                 {user?.role === "patient" && (
                   <>
-                    <Link to="/doctors" className="text-white">Doctors</Link> | 
-                    <Link to="/book" className="text-white">Book Appointment</Link> | 
+                    <Link to="/patient/dashboard" className="text-white">Dashboard</Link>
+                    <Link to="/doctors" className="text-white">Doctors</Link> 
+                    <Link to="/book" className="text-white">Book Appointment</Link> 
                     <Link to="/my-appointments" className="text-white">My Appointments</Link>
+                    <Link to="/profile" className="text-white">Profile</Link>
                   </>
                 )}
                 
@@ -117,6 +118,7 @@ function App() {
         <Route path="/patient/dashboard" element={<PatientDashboard />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
         <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );
