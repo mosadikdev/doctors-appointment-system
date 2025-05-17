@@ -24,6 +24,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+Route::middleware('auth:sanctum')->put('/profile', function (Request $request) {
+    $user = auth()->user();
+    $user->update($request->only('name', 'email', 'specialty', 'city'));
+    return response()->json(['user' => $user]);
+});
+
+Route::middleware('auth:sanctum')->post('/profile/update', [AuthController::class, 'updateProfile']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);

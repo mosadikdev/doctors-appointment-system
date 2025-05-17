@@ -67,13 +67,9 @@ function App() {
 
 
 
-{user?.role === "doctor" && (
-  <Link to="/doctor/dashboard" className="text-white">Dashboard</Link>
-)}
-
                 
                 {user?.role === "patient" && (
-                  <>
+                 <>
                     <Link to="/patient/dashboard" className="text-white">Dashboard</Link>
                     <Link to="/doctors" className="text-white">Doctors</Link> 
                     <Link to="/book" className="text-white">Book Appointment</Link> 
@@ -83,7 +79,11 @@ function App() {
                 )}
                 
                 {user?.role === "doctor" && (
+                   <>
+                  <Link to="/doctor/dashboard" className="text-white">Dashboard</Link>
                   <Link to="/doctor/appointments" className="text-white">Doctor Appointments</Link>
+                  <Link to="/profile" className="text-white">Profile</Link>
+                  </>
                 )}
 
                 

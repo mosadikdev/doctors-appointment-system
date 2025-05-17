@@ -1,33 +1,95 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import axios from '../api/axios';
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const [form, setForm] = useState({
+    name: storedUser?.name || '',
+    email: storedUser?.email || '',
+    specialty: storedUser?.specialty || '',
+    city: storedUser?.city || ''
+  });
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    setUser(userData);
-  }, []);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  if (!user) return <div>Loading...</div>;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+
+    try {
+      const res = await axios.put('/profile', form, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setMessage('✅ Profile updated successfully!');
+    } catch (err) {
+      setError('❌ Failed to update profile.');
+      console.error(err.response?.data || err.message);
+    }
+  };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">👤 My Profile</h2>
-      <div className="space-y-2">
-        <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Role:</strong> {user.role}</p>
-        {user.role === 'doctor' && (
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">👤 My Profile</h2>
+
+      {message && <div className="bg-green-100 text-green-700 px-4 py-2 rounded mb-4">{message}</div>}
+      {error && <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <input type="text" name="name" value={form.name} onChange={handleChange}
+            className="w-full border rounded-lg px-4 py-2" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" name="email" value={form.email} onChange={handleChange}
+            className="w-full border rounded-lg px-4 py-2" required />
+        </div>
+
+        {storedUser?.role === 'doctor' && (
           <>
-            <p><strong>Specialty:</strong> {user.specialty || 'Not set'}</p>
-            <p><strong>City:</strong> {user.city || 'Not set'}</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Specialty</label>
+              <input type="text" name="specialty" value={form.specialty} onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">City</label>
+              <input type="text" name="city" value={form.city} onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-2" />
+            </div>
+
+            <div>
+  <label className="block text-sm font-medium text-gray-700">New Password</label>
+  <input type="password" name="password" onChange={handleChange}
+    className="w-full border rounded-lg px-4 py-2" />
+</div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+  <input type="password" name="password_confirmation" onChange={handleChange}
+    className="w-full border rounded-lg px-4 py-2" />
+</div>
+
           </>
         )}
-      </div>
 
-      <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        ✏️ Edit Profile
-      </button>
+        <button type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+          Update Profile
+        </button>
+      </form>
     </div>
   );
 }

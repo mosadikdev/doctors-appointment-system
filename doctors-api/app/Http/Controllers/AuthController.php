@@ -69,6 +69,30 @@ public function logout(Request $request)
 }
 
 
+public function updateProfile(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'name' => 'required',
+        'password' => 'nullable|min:6|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    $user->name = $request->name;
+    $user->email = $request->email;
+
+    if ($request->filled('password')) {
+        $user->password = bcrypt($request->password);
+    }
+
+    $user->city = $request->city;
+    $user->specialty = $request->specialty;
+
+    $user->save();
+
+    return response()->json(['user' => $user]);
+}
 
 
 }
