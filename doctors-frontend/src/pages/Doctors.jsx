@@ -1,71 +1,76 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 function Doctors() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
+  const [city, setCity] = useState("");
+  const [specialty, setSpecialty] = useState("");
+
+  const fetchDoctors = async (selectedCity = "", selectedSpecialty = "") => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:8000/api/doctors", {
+        params: { city: selectedCity, specialty: selectedSpecialty },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setDoctors(response.data.doctors);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token || !user) {
-      navigate("/login");
-      return;
-    }
-
-    if (user.role !== "patient") {
-      navigate("/my-appointments");
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/doctors", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setDoctors(res.data.doctors);
-      } catch (err) {
-        console.error("Failure to bring doctors:", err);
-      }
-    };
-
     fetchDoctors();
   }, []);
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-        🩺 Available Doctors
-      </h2>
+  useEffect(() => {
+    fetchDoctors(city, specialty);
+  }, [city, specialty]);
 
-      {doctors.length === 0 ? (
-        <p className="text-center text-gray-500">No doctors available.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctors.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                {doc.name}
-              </h3>
-              <p className="text-sm text-gray-500 mb-4">{doc.email}</p>
-              <button
-                onClick={() => navigate(`/book-appointment/${doc.id}`)}
-                className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
-              >
-                Book Appointment
-              </button>
+  return (
+    <div className="p-4">
+      <div className="space-x-2 mb-4 flex flex-wrap gap-2">
+        <select
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className="p-2 border rounded"
+        >
+          <option value="">All Cities</option>
+          <option value="Casablanca">Casablanca</option>
+          <option value="Rabat">Rabat</option>
+          <option value="Fes">Fes</option>
+        </select>
+
+        <select
+          value={specialty}
+          onChange={(e) => setSpecialty(e.target.value)}
+          className="p-2 border rounded"
+        >
+          <option value="">All Specialties</option>
+          <option value="Cardiology">Cardiology</option>
+          <option value="Dentist">Dentist</option>
+          <option value="Dermatology">Dermatology</option>
+        </select>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        {doctors.length === 0 ? (
+          <p className="text-gray-500 col-span-full">No doctors found.</p>
+        ) : (
+          doctors.map((doc) => (
+            <div key={doc.id} className="border p-4 rounded shadow">
+              <h2 className="font-bold">{doc.name}</h2>
+              <p>Email: {doc.email}</p>
+              <p>City: {doc.city || "N/A"}</p>
+              <p>Specialty: {doc.specialty || "N/A"}</p>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }

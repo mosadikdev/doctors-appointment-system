@@ -8,14 +8,26 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
-    $doctors = \App\Models\User::where('role', 'doctor')->get();
+    $query = \App\Models\User::where('role', 'doctor');
+
+    if ($request->filled('city')) {
+    $query->where('city', $request->city);
+}
+
+if ($request->filled('specialty')) {
+    $query->where('specialty', $request->specialty);
+}
+
+
+    $doctors = $query->get();
 
     return response()->json([
         'doctors' => $doctors
     ]);
 }
+
 
     public function dashboard()
     {
