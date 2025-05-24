@@ -6,6 +6,9 @@ function MyAppointments() {
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
 
+
+  
+
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -34,7 +37,6 @@ function MyAppointments() {
     fetchAppointments();
   }, []);
 
-  // Confirm appointment
   const handleConfirm = async (id) => {
     const token = localStorage.getItem("token");
     try {
@@ -45,13 +47,12 @@ function MyAppointments() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      fetchAppointments(); // reload
+      fetchAppointments();
     } catch (error) {
       console.error("Error confirming appointment:", error);
     }
   };
 
-  // Cancel (delete) appointment
   const handleCancel = async (id) => {
     const token = localStorage.getItem("token");
     if (!confirm("Are you sure you want to cancel this appointment?")) return;
@@ -60,7 +61,7 @@ function MyAppointments() {
       await axios.delete(`http://localhost:8000/api/appointments/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchAppointments(); // reload
+      fetchAppointments();
     } catch (error) {
       console.error("Error cancelling appointment:", error);
     }
@@ -89,11 +90,18 @@ function MyAppointments() {
                   : `🩺 Doctor: ${app.doctor?.name || "Unknown"}`}
               </p>
               <p className="text-gray-600">
-                🕒 Time:{" "}
-                <span className="font-semibold">
-                  {new Date(app.appointment_time).toLocaleString()}
-                </span>
-              </p>
+  📅 Date:{" "}
+  <span className="font-semibold">
+    {new Date(app.appointment_date).toLocaleDateString('EG')}
+  </span>
+</p>
+
+<p className="text-gray-600">
+  🕒 Time:{" "}
+  <span className="font-semibold">
+    {app.appointment_time}
+  </span>
+</p>
               <p className="text-gray-600">
                 📌 Status:{" "}
                 <span
@@ -109,7 +117,6 @@ function MyAppointments() {
                 </span>
               </p>
 
-              {/* Doctor Actions */}
               {role === "doctor" && app.status === "pending" && (
                 <div className="mt-4 flex gap-2">
                   <button

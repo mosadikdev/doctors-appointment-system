@@ -1,72 +1,66 @@
 <?php
 
-use App\Http\Controllers\TicketController;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\{
+    AuthController,
+    AdminController,
+    DoctorController,
+    PatientController,
+    AppointmentController,
+    AvailabilityController,
+    DoctorAvailabilityController
+};
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', function (Request $request) {
-        return response()->json([
-            'message' => 'Welcome!',
-            'user' => $request->user()
-        ]);
-    });
+    Route::get('/profile', fn($request) => response()->json([
+        'message' => 'Welcome!',
+        'user' => $request->user()
+    ]));
 
     Route::post('/logout', [AuthController::class, 'logout']);
-});
+    Route::put('/profile', fn($request) => tap(auth()->user())->update($request->only('name', 'email', 'specialty', 'city')));
+    Route::post('/profile/update', [AuthController::class, 'updateProfile']);
 
-Route::middleware('auth:sanctum')->put('/profile', function (Request $request) {
-    $user = auth()->user();
-    $user->update($request->only('name', 'email', 'specialty', 'city'));
-    return response()->json(['user' => $user]);
-});
-
-Route::middleware('auth:sanctum')->post('/profile/update', [AuthController::class, 'updateProfile']);
-
-
-Route::middleware('auth:sanctum')->group(function () {
+    // Appointments (common)
     Route::get('/appointments', [AppointmentController::class, 'index']);
-    Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::post('/appointments', [AvailabilityController::class, 'store']);
     Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
-});
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return response()->json(['message' => 'Hello admin']);
+    // Admin routes
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', fn() => response()->json(['message' => 'Hello admin']));
+        Route::get('/admin/allusers', [AdminController::class, 'allUsers']);
+        Route::post('/admin/add-user', [AdminController::class, 'addUser']);
+        Route::get('/admin/users/{id}', [AdminController::class, 'getUser']);
+        Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
+        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+        Route::get('/admin/stats', [AdminController::class, 'getStats']);
     });
-    Route::get('/admin/allusers', [AdminController::class, 'allUsers']);
-    Route::post('/admin/add-user', [AdminController::class, 'addUser']);
-    Route::get('/admin/users/{id}', [AdminController::class, 'getUser']);
-    Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
-    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
-    Route::get('/admin/stats', [AdminController::class, 'getStats']);
-});
 
-Route::middleware(['auth:sanctum', 'role:doctor'])->group(function () {
-    Route::get('/doctor/dashboard', function () {
-        return response()->json(['message' => 'Hello Doctor']);
+    // Doctor routes
+    Route::middleware('role:doctor')->group(function () {
+        Route::get('/doctor/dashboard', fn() => response()->json(['message' => 'Hello Doctor']));
+        Route::get('/doctor/appointments', [DoctorController::class, 'myAppointments']);
+        Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
+        Route::put('/appointments/{id}/confirm', [AppointmentController::class, 'confirm']);
+        Route::get('/availability', [AvailabilityController::class, 'index']);
+        Route::delete('/availability/{id}', [AvailabilityController::class, 'destroy']);
+        Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
     });
-    Route::get('/doctor/appointments', [DoctorController::class, 'myAppointments']);
-    Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
-    Route::put('/appointments/{id}/confirm', [AppointmentController::class, 'confirm']);
-});
 
-Route::middleware(['auth:sanctum', 'role:patient'])->group(function () {
-    Route::get('/patient/dashboard', function () {
-        return response()->json(['message' => 'Hello Patient']);
+    // Patient routes
+    Route::middleware('role:patient')->group(function () {
+        Route::get('/patient/dashboard', fn() => response()->json(['message' => 'Hello Patient']));
+        Route::get('/doctors', [DoctorController::class, 'index']);
+        Route::post('/patient/appointments', [PatientController::class, 'bookAppointment']);
+        Route::get('/patient/appointments', [AppointmentController::class, 'myAppointments']);
+        Route::get('/doctors/{doctor}/availabilities', [DoctorAvailabilityController::class, 'getAvailableTimes']);
+        Route::get('/doctors/{doctor}/availability', [DoctorAvailabilityController::class, 'index']);
+        Route::get('/doctors/{doctor}/times', [DoctorAvailabilityController::class, 'getTimes']);
+        Route::post('/appointments', [AppointmentController::class, 'store']);
     });
-    Route::get('/doctors', [DoctorController::class, 'index']);
-    Route::post('/patient/appointments', [PatientController::class, 'bookAppointment']);
-    Route::get('/patient/appointments', [AppointmentController::class, 'myAppointments']);
-
 });

@@ -9,14 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
 {
     Schema::create('appointments', function (Blueprint $table) {
         $table->id();
         $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');
         $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
-        $table->timestamp('appointment_time');
-        $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+        $table->date('appointment_date');
+        $table->time('appointment_time');
+        $table->string('status')->default('pending');
         $table->timestamps();
     });
 }

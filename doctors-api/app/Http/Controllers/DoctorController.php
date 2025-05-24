@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\DoctorAvailability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DoctorController extends Controller
 {
@@ -45,4 +47,6 @@ if ($request->filled('specialty')) {
             'appointments' => $appointments
         ]);
     }
+
+
 }

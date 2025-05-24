@@ -19,30 +19,52 @@ class AppointmentController extends Controller
 
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'doctor_id' => 'required|exists:users,id',
-            'appointment_time' => 'required|date|after:now',
-        ]);
+{
+    $validated = $request->validate([
+        'doctor_id' => 'required|exists:users,id',
+        'appointment_date' => 'required|date_format:Y-m-d',
+        'appointment_time' => 'required|date_format:H:i'
+    ]);
 
+    try {
         $appointment = Appointment::create([
             'patient_id' => Auth::id(),
-            'doctor_id' => $request->doctor_id,
-            'appointment_time' => $request->appointment_time,
+            'doctor_id' => $validated['doctor_id'],
+            'appointment_date' => $validated['appointment_date'],
+            'appointment_time' => $validated['appointment_time'],
+            'status' => 'pending'
         ]);
 
         return response()->json([
-            'message' => 'The appointment was created successfully.',
-            'appointment' => $appointment,
+            'message' => 'Booking successful',
+            'data' => $appointment
         ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to book',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     public function myAppointments()
-    {
-        $appointments = Appointment::where('patient_id', Auth::id())->with('doctor')->get();
+{
+    $appointments = Appointment::where('patient_id', Auth::id())
+        ->with('doctor')
+        ->get()
+        ->map(function ($appointment) {
+            return [
+                'id' => $appointment->id,
+                'appointment_date' => $appointment->appointment_date,
+                'appointment_time' => $appointment->appointment_time,
+                'status' => $appointment->status,
+                'doctor' => $appointment->doctor,
+            ];
+        });
 
-        return response()->json($appointments);
-    }
+    return response()->json($appointments);
+}
 
     public function doctorAppointments()
     {

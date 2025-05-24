@@ -61,10 +61,7 @@ public function isPatient()
     return $this->role === 'patient';
 }
 
-public function tickets()
-{
-    return $this->hasMany(Ticket::class);
-}
+
 
 
 public function doctor()
@@ -76,6 +73,13 @@ public function patients()
 {
     return $this->hasMany(User::class, 'doctor_id');
 }
+
+
+public function availabilities()
+{
+    return $this->hasMany(Availability::class);
+}
+
 
 
 }

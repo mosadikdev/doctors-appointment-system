@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -70,8 +69,6 @@ public function updateUser(Request $request, $id)
 {
     return response()->json([
         'total_users' => User::count(),
-        'open_tickets' => Ticket::where('status', 'open')->count(),
-        'closed_tickets' => Ticket::where('status', 'closed')->count(),
     ]);
 }
 
