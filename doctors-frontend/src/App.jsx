@@ -1,4 +1,18 @@
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Routes, Route, useNavigate, NavLink } from 'react-router-dom';
+import { 
+  HomeIcon,
+  UserCircleIcon,
+  CalendarIcon,
+  UserGroupIcon,
+  PlusCircleIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+  UserPlusIcon,
+  QueueListIcon,
+  Bars3Icon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Doctors from './pages/Doctors';
@@ -19,93 +33,179 @@ function App() {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
+    setIsMobileMenuOpen(false);
   };
 
   const handleLogoClick = () => {
-    if (!token) {
-      navigate('/');
-    } else if (user?.role === 'admin') {
-      navigate('/admin');
-    } else if (user?.role === 'doctor') {
-      navigate('/doctor/dashboard');
-    } else if (user?.role === 'patient') {
-      navigate('/patient/dashboard');
-    } else {
-      navigate('/');
+    setIsMobileMenuOpen(false);
+    if (!token) navigate('/');
+    else switch(user?.role) {
+      case 'admin': navigate('/admin'); break;
+      case 'doctor': navigate('/doctor/dashboard'); break;
+      case 'patient': navigate('/patient/dashboard'); break;
+      default: navigate('/');
     }
   };
 
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  const renderNavLink = (to, text, Icon) => (
+    <NavLink
+      to={to}
+      onClick={() => setIsMobileMenuOpen(false)}
+      className={({ isActive }) => 
+        `flex items-center px-3 py-2 rounded-md transition-colors ${
+          isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'
+        }`
+    }>
+      <Icon className="h-5 w-5 mr-2" />
+      {text}
+    </NavLink>
+  );
+
   return (
-    <div>
-      <nav className="bg-blue-600 p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* Logo */}
-          <span
-            onClick={handleLogoClick}
-            className="text-white font-bold text-2xl cursor-pointer"
-          >
-            Doctors Appointment System
-          </span>
+    <div className="min-h-screen flex flex-col">
+      {/* Navigation Bar */}
+      <nav className="bg-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            {/* Logo Section */}
+            <div className="flex items-center">
+              <button
+                onClick={handleLogoClick}
+                className="flex items-center focus:outline-none"
+              >
+                <img 
+                  src="/logo.png" 
+                  alt="Logo"
+                  className="h-8 w-8 mr-2"
+                />
+                <span className="text-xl font-bold text-blue-600">
+                  Doctors System
+                </span>
+              </button>
+            </div>
 
-          {/* Navigation Links */}
-          <div className="space-x-4 hidden md:flex items-center">
-            {!token ? (
-              <>
-                <Link to="/login" className="text-white">Login</Link>
-                <Link to="/register" className="text-white">Sign up</Link>
-              </>
-            ) : (
-              <>
-                {user?.role === 'admin' && (
-                  <>
-                    <Link to="/admin" className="text-white">Dashboard</Link>
-                    <Link to="/admin/users" className="text-white">Users</Link>
-                  </>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {!token ? (
+                <div className="flex items-center space-x-4">
+                  {renderNavLink('/login', 'Login', UserCircleIcon)}
+                  {renderNavLink('/register', 'Register', UserPlusIcon)}
+                </div>
+              ) : (
+                <div className="flex items-center space-x-6">
+                  {user?.role === 'admin' && (
+                    <>
+                      {renderNavLink('/admin', 'Dashboard', QueueListIcon)}
+                      {renderNavLink('/admin/users', 'Manage Users', UserGroupIcon)}
+                    </>
+                  )}
+
+                  {user?.role === 'patient' && (
+                    <>
+                      {renderNavLink('/patient/dashboard', 'Dashboard', HomeIcon)}
+                      {renderNavLink('/doctors', 'Doctors', UserGroupIcon)}
+                      {renderNavLink('/book', 'Book Appointment', PlusCircleIcon)}
+                    </>
+                  )}
+
+                  {user?.role === 'doctor' && (
+                    <>
+                      {renderNavLink('/doctor/dashboard', 'Dashboard', HomeIcon)}
+                      {renderNavLink('/doctor/appointments', 'Appointments', CalendarIcon)}
+                    </>
+                  )}
+
+                  <div className="flex items-center space-x-4">
+                    {renderNavLink('/profile', 'Profile', Cog6ToothIcon)}
+                    
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={toggleMobileMenu}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-md"
+              >
+                {isMobileMenuOpen ? (
+                  <XMarkIcon className="h-6 w-6" />
+                ) : (
+                  <Bars3Icon className="h-6 w-6" />
                 )}
-
-                {user?.role === 'patient' && (
-                  <>
-                    <Link to="/patient/dashboard" className="text-white">Dashboard</Link>
-                    <Link to="/doctors" className="text-white">Doctors</Link>
-                    <Link to="/book" className="text-white">Book Appointment</Link>
-                    <Link to="/my-appointments" className="text-white">My Appointments</Link>
-                    <Link to="/profile" className="text-white">Profile</Link>
-                  </>
-                )}
-
-                {user?.role === 'doctor' && (
-                  <>
-                    <Link to="/doctor/dashboard" className="text-white">Dashboard</Link>
-                    <Link to="/doctor/appointments" className="text-white">Appointments</Link>
-                    <Link to="/doctor/availability" className="text-white">Availability</Link>
-                    <Link to="/profile" className="text-white">Profile</Link>
-                  </>
-                )}
-
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-
-          <div className="md:hidden">
-            <button className="text-white" onClick={() => alert("Add mobile menu here")}>
-              ☰
-            </button>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-b">
+            <div className="px-4 pt-2 pb-3 space-y-1">
+              {!token ? (
+                <>
+                  {renderNavLink('/login', 'Login', UserCircleIcon)}
+                  {renderNavLink('/register', 'Register', UserPlusIcon)}
+                </>
+              ) : (
+                <>
+                  {user?.role === 'admin' && (
+                    <>
+                      {renderNavLink('/admin', 'Dashboard', QueueListIcon)}
+                      {renderNavLink('/admin/users', 'Manage Users', UserGroupIcon)}
+                    </>
+                  )}
+
+                  {user?.role === 'patient' && (
+                    <>
+                      {renderNavLink('/patient/dashboard', 'Dashboard', HomeIcon)}
+                      {renderNavLink('/doctors', 'Doctors', UserGroupIcon)}
+                      {renderNavLink('/book', 'Book Appointment', PlusCircleIcon)}
+                    </>
+                  )}
+
+                  {user?.role === 'doctor' && (
+                    <>
+                      {renderNavLink('/doctor/dashboard', 'Dashboard', HomeIcon)}
+                      {renderNavLink('/doctor/appointments', 'Appointments', CalendarIcon)}
+                    </>
+                  )}
+
+                  {renderNavLink('/profile', 'Profile', Cog6ToothIcon)}
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-md"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
-      <Routes>
+      {/* Main Content */}
+      <main className="flex-1">
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -129,6 +229,7 @@ function App() {
 
         <Route path="/profile" element={<Profile />} />
       </Routes>
+      </main>
     </div>
   );
 }
