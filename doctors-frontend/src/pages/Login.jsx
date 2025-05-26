@@ -1,87 +1,115 @@
 import { useState } from 'react';
-import axios from '../api/axios';
 import { useNavigate } from "react-router-dom";
+import axios from '../api/axios';
+import { 
+  EnvelopeIcon,
+  LockClosedIcon,
+  ArrowPathIcon
+} from '@heroicons/react/24/outline';
+import AuthLayout from '../components/AuthLayout';
+import FormInput from '../components/FormInput';
+import ErrorAlert from '../components/Alerts/ErrorAlert';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  try {
-    const res = await axios.post('/login', form);
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-    const role = res.data.user.role;
+    try {
+      const { data } = await axios.post('/login', form);
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-    if (role === 'admin') {
-      navigate('/admin'); 
-    } else if (role === 'doctor') {
-      navigate('/doctor/dashboard');
-    } else if (role === 'patient') {
-      navigate('/patient/dashboard'); 
-    } else {
-      navigate('/');
+      setTimeout(() => {
+        const redirectPaths = {
+          admin: '/admin',
+          doctor: '/doctor/dashboard',
+          patient: '/patient/dashboard'
+        };
+        
+        navigate(redirectPaths[data.user.role] || '/');
+      }, 1000);
+
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 
+        'Network error. Please try again later.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    setError('❌ Incorrect email or password.');
-    console.error(err.response?.data || err.message);
-  }
-};
-
-
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">🔐 Login</h2>
-        
-        {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
-            {error}
-          </div>
-        )}
+    <AuthLayout
+      title="Welcome Back!"
+      subtitle="Please sign in to continue"
+      footerText="Don't have an account?"
+      footerLink="/register"
+      footerLinkText="Create account"
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && <ErrorAlert message={error} />}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="you@example.com"
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <FormInput
+          label="Email Address"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="name@example.com"
+          icon={<EnvelopeIcon className="h-5 w-5 text-gray-400" />}
+          required
+        />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="********"
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <FormInput
+          label="Password"
+          name="password"
+          type={showPassword ? "text" : "password"}
+          value={form.password}
+          onChange={handleChange}
+          placeholder="••••••••"
+          icon={<LockClosedIcon className="h-5 w-5 text-gray-400" />}
+          endAdornment={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-gray-500 hover:text-blue-600"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          }
+          required
+        />
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Sign In
-          </button>
-        </form>
-      </div>
-    </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3.5 rounded-xl font-medium hover:opacity-95 transition-opacity flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <ArrowPathIcon className="h-5 w-5 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            'Sign In'
+          )}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }
