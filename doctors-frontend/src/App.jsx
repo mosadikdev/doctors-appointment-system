@@ -81,11 +81,6 @@ function App() {
                 onClick={handleLogoClick}
                 className="flex items-center focus:outline-none"
               >
-                <img 
-                  src="/logo.png" 
-                  alt="Logo"
-                  className="h-8 w-8 mr-2"
-                />
                 <span className="text-xl font-bold text-blue-600">
                   Doctors System
                 </span>
@@ -120,6 +115,7 @@ function App() {
                     <>
                       {renderNavLink('/doctor/dashboard', 'Dashboard', HomeIcon)}
                       {renderNavLink('/doctor/appointments', 'Appointments', CalendarIcon)}
+                      {renderNavLink('/doctor/availability', 'Availability', CalendarIcon)}
                     </>
                   )}
 

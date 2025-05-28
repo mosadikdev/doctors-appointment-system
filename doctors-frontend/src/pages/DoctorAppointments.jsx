@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { CalendarIcon, ClockIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import StatusBadge from "../components/StatusBadge";
+import Spinner from "../components/Spinner";
+import ErrorAlert from "../components/Alerts/ErrorAlert";
 
 function DoctorAppointments() {
   const [appointments, setAppointments] = useState([]);
-
-  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/api/doctor/appointments", {
+        const { data } = await axios.get("http://localhost:8000/api/doctor/appointments", {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setAppointments(res.data.appointments || []);
+        setAppointments(data.appointments || []);
       } catch (err) {
-        console.error("Failed to fetch appointments:", err);
+        setError("Failed to load appointments", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAppointments();
@@ -29,64 +35,80 @@ function DoctorAppointments() {
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      
       setAppointments(prev => prev.map(app => 
         app.id === id ? { ...app, status } : app
       ));
     } catch (err) {
-      console.error("Failed to change status:", err);
+      console.error("Status update failed:", err);
+      setError("Failed to update appointment status");
     }
   };
 
+  if (loading) return <Spinner size="lg" variant="primary" />;
+
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-6 text-blue-700">📅 Patient appointments</h2>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <CalendarIcon className="h-10 w-10 text-blue-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Patient Appointments</h1>
+            <p className="text-gray-600 mt-1">Manage and track all patient appointments</p>
+          </div>
+        </div>
 
-      {appointments.length === 0 ? (
-        <p className="text-gray-600 text-center">There are no appointments currently.</p>
-      ) : (
-        <ul className="space-y-4">
-          {appointments.map((app) => (
-            <li
-              key={app.id}
-              className="border p-4 rounded shadow-sm bg-gray-50 hover:bg-gray-100 transition"
-            >
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-2 md:space-y-0">
-                <div>
-                  <p className="text-lg font-medium text-gray-800">
-                    👤 The patient: <span className="text-blue-700">{app.patient?.name || "unknown"}</span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    📅 Date: {new Date(app.appointment_date).toLocaleDateString('EG')}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    🕒 Time: {app.appointment_time}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    📌 Status: <span className={
-                      app.status === 'pending' ? 'text-yellow-600' :
-                      app.status === 'confirmed' ? 'text-green-600' :
-                      'text-red-600'
-                    }>{app.status}</span>
-                  </p>
-                </div>
+        {error && <ErrorAlert message={error} />}
 
-                <div className="mt-2 md:mt-0">
-                  <label className="text-sm font-semibold text-gray-700 mr-2">Change status:</label>
-                  <select
-                    value={app.status}
-                    onChange={(e) => handleStatusChange(app.id, e.target.value)}
-                    className="px-3 py-1 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="pending">pending</option>
-                    <option value="confirmed">confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
+        {appointments.length === 0 ? (
+          <div className="bg-white rounded-xl shadow p-6 text-center text-gray-600">
+            No appointments found
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {appointments.map((app) => (
+              <div
+                key={app.id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <UserCircleIcon className="h-12 w-12 text-gray-400 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {app.patient?.name || "Unknown Patient"}
+                      </h3>
+                      <div className="mt-2 flex flex-wrap gap-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <CalendarIcon className="h-5 w-5 text-blue-500" />
+                          {new Date(app.appointment_date).toLocaleDateString('en-GB')}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <ClockIcon className="h-5 w-5 text-green-500" />
+                          {app.appointment_time}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 min-w-[200px]">
+                    <StatusBadge status={app.status} />
+                    <select
+                      value={app.status}
+                      onChange={(e) => handleStatusChange(app.id, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

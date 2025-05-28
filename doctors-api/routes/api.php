@@ -50,6 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/availability', [AvailabilityController::class, 'index']);
         Route::delete('/availability/{id}', [AvailabilityController::class, 'destroy']);
         Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
+        Route::get('/doctor/stats', [DoctorController::class, 'getStats']);
+
     });
 
     // Patient routes
