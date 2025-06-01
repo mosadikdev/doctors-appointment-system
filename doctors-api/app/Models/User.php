@@ -81,5 +81,12 @@ public function availabilities()
 }
 
 
+public function bookmarkedDoctors()
+{
+    return $this->belongsToMany(User::class, 'patient_doctor_bookmarks', 
+        'patient_id', 'doctor_id')
+        ->where('role', 'doctor');
+}
+
 
 }

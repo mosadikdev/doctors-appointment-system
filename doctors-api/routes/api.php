@@ -52,6 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
         Route::get('/doctor/stats', [DoctorController::class, 'getStats']);
 
+        Route::put('/appointments/{id}/complete', [AppointmentController::class, 'complete']);
+
+
     });
 
     // Patient routes
@@ -64,5 +67,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/doctors/{doctor}/availability', [DoctorAvailabilityController::class, 'index']);
         Route::get('/doctors/{doctor}/times', [DoctorAvailabilityController::class, 'getTimes']);
         Route::post('/appointments', [AppointmentController::class, 'store']);
+
+        Route::get('/patient/stats', [PatientController::class, 'stats']);
+    Route::get('/patient/upcoming-appointments', [PatientController::class, 'upcomingAppointments']);
+    Route::get('/patient/saved-doctors', [PatientController::class, 'savedDoctors']);
+
+
+    Route::post('/patient/bookmark-doctor/{doctor}', [PatientController::class, 'bookmarkDoctor']);
+Route::delete('/patient/bookmark-doctor/{doctor}', [PatientController::class, 'removeBookmark']);
+
     });
 });

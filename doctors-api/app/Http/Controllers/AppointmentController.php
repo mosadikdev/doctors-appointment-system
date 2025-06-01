@@ -76,8 +76,9 @@ class AppointmentController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,cancelled',
-        ]);
+    'status' => 'required|in:pending,confirmed,cancelled,completed',
+]);
+
 
         $appointment = Appointment::findOrFail($id);
 
@@ -108,4 +109,18 @@ class AppointmentController extends Controller
     return response()->json(['message' => 'Appointment confirmed successfully']);
 }
 
+
+public function complete($id)
+{
+    $appointment = Appointment::findOrFail($id);
+    
+    if (auth()->user()->role !== 'doctor') {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    $appointment->status = 'completed';
+    $appointment->save();
+
+    return response()->json($appointment);
+}
 }
