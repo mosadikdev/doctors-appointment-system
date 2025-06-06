@@ -1,4 +1,3 @@
-// doctors-frontend\src\pages\MyAppointments.jsx:
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CalendarIcon, ClockIcon, UserIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
@@ -107,6 +106,7 @@ function MyAppointments() {
   });
 };
 
+  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -417,9 +417,58 @@ function MyAppointments() {
         </div>
 
         
+        {/* Calendar Preview */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Appointment Calendar</h2>
+            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              View Full Calendar
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+              <div key={day} className="text-center text-sm font-medium text-gray-500 p-2">
+                {day}
+              </div>
+            ))}
+          </div>
+          
+          <div className="grid grid-cols-7 gap-1">
+            {[...Array(35)].map((_, i) => {
+              const day = i - 2; 
+              const today = new Date();
+              const date = new Date();
+              date.setDate(today.getDate() + day);
+              
+              const hasAppointment = Math.random() > 0.8;
+              
+              return (
+                <div 
+                  key={i} 
+                  className={`h-14 border border-gray-200 rounded-lg flex flex-col items-center justify-center p-1 ${
+                    day === 0 ? "bg-blue-50 border-blue-200" : ""
+                  }`}
+                >
+                  <span className={`text-sm ${
+                    day === 0 
+                      ? "font-bold text-blue-700" 
+                      : date.toDateString() === today.toDateString()
+                      ? "font-bold text-white bg-blue-600 rounded-full w-6 h-6 flex items-center justify-center"
+                      : "text-gray-700"
+                  }`}>
+                    {date.getDate()}
+                  </span>
+                  {hasAppointment && (
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
-
+};
 export default MyAppointments;

@@ -45,58 +45,50 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
     public function isAdmin()
-{
-    return $this->role === 'admin';
-}
+    {
+        return $this->role === 'admin';
+    }
 
-public function isDoctor()
-{
-    return $this->role === 'doctor';
-}
+    public function isDoctor()
+    {
+        return $this->role === 'doctor';
+    }
 
-public function isPatient()
-{
-    return $this->role === 'patient';
-}
+    public function isPatient()
+    {
+        return $this->role === 'patient';
+    }
 
+    public function doctor()
+    {
+        return $this->belongsTo(User::class, 'doctor_id');
+    }
 
+    public function patients()
+    {
+        return $this->hasMany(User::class, 'doctor_id');
+    }
 
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class);
+    }
 
-public function doctor()
-{
-    return $this->belongsTo(User::class, 'doctor_id');
-}
+    public function bookmarkedDoctors()
+    {
+        return $this->belongsToMany(User::class, 'patient_doctor_bookmarks', 
+            'patient_id', 'doctor_id')
+            ->where('role', 'doctor');
+    }
 
-public function patients()
-{
-    return $this->hasMany(User::class, 'doctor_id');
-}
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patient_id');
+    }
 
-
-public function availabilities()
-{
-    return $this->hasMany(Availability::class);
-}
-
-
-public function bookmarkedDoctors()
-{
-    return $this->belongsToMany(User::class, 'patient_doctor_bookmarks', 
-        'patient_id', 'doctor_id')
-        ->where('role', 'doctor');
-}
-
-public function appointments()
-{
-    return $this->hasMany(Appointment::class, 'patient_id');
-}
-
-
-public function reviews()
-{
-    return $this->hasMany(Review::class, 'doctor_id');
-}
-
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'doctor_id');
+    }
 }

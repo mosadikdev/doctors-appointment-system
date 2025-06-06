@@ -47,23 +47,22 @@ function Doctors() {
   };
 
   const fetchBookmarks = async () => {
-  const token = localStorage.getItem("token");
-  try {
-    const response = await axios.get(`http://localhost:8000/api/patient/bookmarks`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`http://localhost:8000/api/bookmarks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const bookmarkedDoctors = response.data || [];
-    
-    const bookmarkState = {};
-    bookmarkedDoctors.forEach(doctor => {
-      bookmarkState[doctor.id] = true;
-    });
-    setIsBookmarked(bookmarkState);
-  } catch (error) {
-    console.error("Error fetching bookmarks:", error);
-  }
-};
+      const bookmarkedDoctors = response.data.bookmarks;
+      const bookmarkState = {};
+      bookmarkedDoctors.forEach(b => {
+        bookmarkState[b.doctor_id] = true;
+      });
+      setIsBookmarked(bookmarkState);
+    } catch (error) {
+      console.error("Error fetching bookmarks:", error);
+    }
+  };
 
   useEffect(() => {
     fetchDoctors();
@@ -92,29 +91,27 @@ function Doctors() {
   }, [city, specialty, searchQuery, doctors]);
 
   const toggleBookmark = async (doctorId) => {
-  const token = localStorage.getItem("token");
-  try {
-    if (!isBookmarked[doctorId]) {
-      await axios.post(
-        `http://localhost:8000/api/patient/bookmarks/${doctorId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } else {
-      await axios.delete(
-        `http://localhost:8000/api/patient/bookmarks/${doctorId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    }
+    const token = localStorage.getItem("token");
+    try {
+      if (!isBookmarked[doctorId]) {
+        await axios.post(`http://localhost:8000/api/bookmarks`,
+          { doctor_id: doctorId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.delete(`http://localhost:8000/api/bookmarks/${doctorId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
 
-    setIsBookmarked(prev => ({
-      ...prev,
-      [doctorId]: !prev[doctorId]
-    }));
-  } catch (error) {
-    console.error("Error toggling bookmark:", error);
-  }
-};
+      setIsBookmarked(prev => ({
+        ...prev,
+        [doctorId]: !prev[doctorId]
+      }));
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
 
   const clearFilters = () => {
     setCity("");

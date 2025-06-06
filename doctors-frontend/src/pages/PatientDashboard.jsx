@@ -18,50 +18,48 @@ function PatientDashboard() {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [savedDoctors, setSavedDoctors] = useState([]);
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem("token");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        };
 
-  
+        const baseURL = "http://localhost:8000"; 
+        
+        const statsRes = await fetch(`${baseURL}/api/patient/stats`, { headers });
+        if (!statsRes.ok) {
+          const error = await statsRes.json();
+          throw new Error(`Stats request failed: ${error.message || statsRes.statusText}`);
+        }
+        const statsData = await statsRes.json();
+        setStats(statsData);
 
-    useEffect(() => {
-  async function fetchData() {
-    try {
-      const token = localStorage.getItem("token");
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      };
+        const upcomingRes = await fetch(`${baseURL}/api/patient/upcoming-appointments`, { headers });
+        if (!upcomingRes.ok) {
+          const error = await upcomingRes.json();
+          throw new Error(`Appointments request failed: ${error.error || error.message || upcomingRes.statusText}`);
+        }
+        const upcomingData = await upcomingRes.json();
+        setUpcomingAppointments(upcomingData);
 
-      const baseURL = "http://localhost:8000"; 
-      const statsRes = await fetch(`${baseURL}/api/patient/stats`, { headers });
-      if (!statsRes.ok) {
-        const error = await statsRes.json();
-        throw new Error(`Stats request failed: ${error.message || statsRes.statusText}`);
+        const savedRes = await fetch(`${baseURL}/api/patient/bookmarks`, { headers });
+        if (!savedRes.ok) {
+          const error = await savedRes.json();
+          throw new Error(`Doctors request failed: ${error.error || error.message || savedRes.statusText}`);
+        }
+        const savedData = await savedRes.json();
+        console.log("Saved Doctors Data:", savedData);
+        setSavedDoctors(savedData);
+      } catch (err) {
+        console.error("Error fetching data:", err);
       }
-      const statsData = await statsRes.json();
-      setStats(statsData);
-
-      const upcomingRes = await fetch(`${baseURL}/api/patient/upcoming-appointments`, { headers });
-      if (!upcomingRes.ok) {
-        const error = await upcomingRes.json();
-        throw new Error(`Appointments request failed: ${error.error || error.message || upcomingRes.statusText}`);
-      }
-      const upcomingData = await upcomingRes.json();
-      setUpcomingAppointments(upcomingData);
-
-      const savedRes = await fetch(`${baseURL}/api/patient/bookmarks`, { headers });
-      if (!savedRes.ok) {
-        const error = await savedRes.json();
-        throw new Error(`Doctors request failed: ${error.error || error.message || savedRes.statusText}`);
-      }
-      const savedData = await savedRes.json();
-      console.log("Saved Doctors Data:", savedData);
-      setSavedDoctors(savedData);
-    } catch (err) {
-      console.error("Error fetching data:", err);
     }
-  }
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 sm:p-6">
@@ -190,44 +188,45 @@ function PatientDashboard() {
         </Section>
         
         {/* Saved Doctors */}
-         <Section title="Your Favorite Doctors" link="/saved-doctors">
+        <Section title="Your Favorite Doctors" link="/saved-doctors">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {savedDoctors.map((doctor) => (
-  <div
-    key={doctor.id}
-    className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow"
-  >
-    <div className="flex items-start gap-4">
-      <img
-        src={doctor.photo || "/placeholder.png"}
-        alt={doctor.name}
-        className="w-16 h-16 rounded-xl object-cover"
-      />
-      <div>
-        <h3 className="font-semibold text-gray-900">
-          Dr. {doctor.name}
-        </h3>
-        <p className="text-sm text-gray-600">{doctor.specialty}</p>
-        <div className="flex items-center mt-2">
-          <div className="flex text-yellow-400">
-            {[...Array(5)].map((_, i) => (
-              <svg
-                key={i}
-                className={`w-4 h-4 fill-current ${
-                  i < Math.round(doctor.rating || 4.5) ? "" : "text-gray-300"
-                }`}
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-              </svg>
-            ))}
-          </div>
-          <span className="text-gray-500 text-sm ml-2">
-            {(doctor.rating || 4.5).toFixed(1)} ({(doctor.reviewsCount || 12)})
-          </span>
-        </div>
-      </div>
-    </div>
+            {savedDoctors.length === 0 ? (
+              <p className="text-gray-500">You have no saved doctors.</p>
+            ) : (
+              savedDoctors.map((doctor) => (
+                <div
+                  key={doctor.id}
+                  className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start gap-4">
+                    <img
+                      src={doctor.photo || "/placeholder.png"}
+                      alt={doctor.name}
+                      className="w-16 h-16 rounded-xl object-cover"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Dr. {doctor.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">{doctor.specialty}</p>
+                      <div className="flex items-center mt-2">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`w-4 h-4 fill-current ${i < Math.round(doctor.rating || 4.5) ? "" : "text-gray-300"}`}
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="text-gray-500 text-sm ml-2">
+                          {(doctor.rating || 4.5).toFixed(1)} ({(doctor.reviewsCount || 12)})
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex gap-2 mt-4">
                     <button className="flex-1 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                       View Profile
@@ -238,7 +237,7 @@ function PatientDashboard() {
                   </div>
                 </div>
               ))
-            }
+            )}
           </div>
         </Section>
       </div>

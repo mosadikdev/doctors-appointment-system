@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Appointments (common)
     Route::get('/appointments', [AppointmentController::class, 'index']);
-    Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::post('/appointments', [AppointmentController::class, 'store']); 
     Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
 
@@ -47,14 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/doctor/appointments', [DoctorController::class, 'myAppointments']);
         Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
         Route::put('/appointments/{id}/confirm', [AppointmentController::class, 'confirm']);
+        Route::put('/appointments/{id}/complete', [AppointmentController::class, 'complete']);
         Route::get('/availability', [AvailabilityController::class, 'index']);
         Route::delete('/availability/{id}', [AvailabilityController::class, 'destroy']);
         Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
         Route::get('/doctor/stats', [DoctorController::class, 'getStats']);
-
-        Route::put('/appointments/{id}/complete', [AppointmentController::class, 'complete']);
-
-
     });
 
     // Patient routes
@@ -66,17 +63,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/doctors/{doctor}/availabilities', [DoctorAvailabilityController::class, 'getAvailableTimes']);
         Route::get('/doctors/{doctor}/availability', [DoctorAvailabilityController::class, 'index']);
         Route::get('/doctors/{doctor}/times', [DoctorAvailabilityController::class, 'getTimes']);
-        Route::post('/appointments', [AppointmentController::class, 'store']);
-
         Route::get('/patient/stats', [PatientController::class, 'stats']);
-    Route::get('/patient/upcoming-appointments', [PatientController::class, 'upcomingAppointments']);
+        Route::get('/patient/upcoming-appointments', [PatientController::class, 'upcomingAppointments']);
 
-
-    
-
-    Route::get('/patient/bookmarks', [PatientController::class, 'savedDoctors']); 
-    Route::post('/patient/bookmarks/{doctor}', [PatientController::class, 'bookmarkDoctor']); 
-    Route::delete('/patient/bookmarks/{doctor}', [PatientController::class, 'removeBookmark']); 
-
+        Route::get('/patient/bookmarks', [PatientController::class, 'savedDoctors']);
+        Route::post('/patient/bookmarks/{doctor}', [PatientController::class, 'bookmarkDoctor']);
+        Route::delete('/patient/bookmarks/{doctor}', [PatientController::class, 'removeBookmark']);
     });
 });
