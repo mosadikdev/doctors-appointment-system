@@ -25,6 +25,8 @@ class AdminController extends Controller
         'email' => 'required|email|unique:users,email',
         'password' => 'required',
         'role' => 'required|in:admin,doctor,patient',
+        'specialty' => 'nullable|string',
+        'city' => 'nullable|string',
     ]);
 
     $validated['password'] = bcrypt($validated['password']);
@@ -48,6 +50,8 @@ public function updateUser(Request $request, $id)
         'name' => 'required',
         'email' => 'required|email|unique:users,email,' . $id,
         'role' => 'required|in:admin,doctor,patient',
+        'specialty' => 'nullable|string',
+        'city' => 'nullable|string',
     ]);
 
     $user->update($validated);

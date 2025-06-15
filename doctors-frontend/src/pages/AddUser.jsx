@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { UserPlusIcon,  UserIcon, AtSymbolIcon , LockClosedIcon } from "@heroicons/react/24/outline";
+import { UserPlusIcon,  UserIcon,HomeIcon, AtSymbolIcon , LockClosedIcon } from "@heroicons/react/24/outline";
 import FormInput from "../components/FormInput";
 import FormSelect from "../components/FormSelect";
 import SuccessAlert from "../components/Alerts/SuccessAlert";
@@ -14,6 +14,8 @@ function AddUser() {
     email: "",
     password: "",
     role: "patient",
+    city: "",
+    specialty: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -97,6 +99,29 @@ function AddUser() {
               { value: "admin", label: "Admin" },
             ]}
           />
+
+          {form.role === "doctor" && (
+  <FormInput
+    label="Specialty"
+    name="specialty"
+    value={form.specialty}
+    onChange={(e) => setForm({ ...form, specialty: e.target.value })}
+    required
+    icon={<UserIcon className="h-5 w-5 text-gray-400" />}
+  />
+)}
+
+
+{form.role === "doctor" && (
+  <FormInput
+    label="city"
+    name="city"
+    value={form.city}
+    onChange={(e) => setForm({ ...form, city: e.target.value })}
+    required
+    icon={<HomeIcon className="h-5 w-5 text-gray-400" />}
+  />
+)}
 
           <button
             type="submit"
