@@ -137,9 +137,9 @@ class User extends Authenticatable
      * Get doctor's reviews
      */
     public function reviews()
-    {
-        return $this->hasMany(Review::class, 'doctor_id');
-    }
+{
+    return $this->hasMany(Review::class, 'doctor_id');
+}
 
     /**
      * Get the URL for the user's profile photo
@@ -183,4 +183,7 @@ class User extends Authenticatable
         // Simple formatting - customize based on your needs
         return preg_replace('/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3', $this->phone);
     }
+
+
+    
 }

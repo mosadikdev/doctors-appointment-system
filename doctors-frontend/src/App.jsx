@@ -28,6 +28,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import DoctorAvailability from './pages/DoctorAvailability';
+import DoctorProfile from './pages/DoctorProfile';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -208,8 +209,11 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        <Route path="/doctor/:id" element={<DoctorProfile />} />
+        <Route path="/saved-doctors" element={<Doctors showSaved={true} />} />
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/book" element={<BookAppointment />} />
+        <Route path="/book/:doctorId" element={<BookAppointment />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
 
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />

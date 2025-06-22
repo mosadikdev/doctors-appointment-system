@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Availability;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,6 +77,31 @@ if ($request->filled('specialty')) {
     ]);
 }
 
+
+public function show($id)
+{
+    $doctor = User::where('role', 'doctor')->find($id);
+
+    if (!$doctor) {
+        return response()->json(['error' => 'Doctor not found'], 404);
+    }
+
+    return response()->json([
+        'id' => $doctor->id,
+        'name' => $doctor->name,
+        'email' => $doctor->email,
+        'phone' => $doctor->phone,
+        'gender' => $doctor->gender,
+        'specialty' => $doctor->specialty,
+        'city' => $doctor->city,
+        'photo_url' => $doctor->photo_url,
+        'availability' => $doctor->availability,
+        'bio' => $doctor->bio,
+        'address' => $doctor->address,
+        'reviews_count' => $doctor->reviews_count ?? 0,
+        'reviews_avg_rating' => $doctor->reviews_avg_rating ?? 0,
+    ]);
+}
 
 
 

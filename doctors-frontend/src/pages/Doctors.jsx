@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { HeartIcon, StarIcon, MapPinIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { FunnelIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { Link } from "react-router-dom";
 
-function Doctors() {
+function Doctors({  }) {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [cities, setCities] = useState([]);
@@ -47,22 +48,22 @@ function Doctors() {
   };
 
   const fetchBookmarks = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.get(`http://localhost:8000/api/bookmarks`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(`http://localhost:8000/api/patient/bookmarks`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const bookmarkedDoctors = response.data.bookmarks;
-      const bookmarkState = {};
-      bookmarkedDoctors.forEach(b => {
-        bookmarkState[b.doctor_id] = true;
-      });
-      setIsBookmarked(bookmarkState);
-    } catch (error) {
-      console.error("Error fetching bookmarks:", error);
-    }
-  };
+      const bookmarkedDoctors = response.data;
+    const bookmarkState = {};
+    bookmarkedDoctors.forEach(doctor => {
+      bookmarkState[doctor.id] = true;
+    });
+    setIsBookmarked(bookmarkState);
+  } catch (error) {
+    console.error("Error fetching bookmarks:", error);
+  }
+};
 
   useEffect(() => {
     fetchDoctors();
@@ -91,28 +92,29 @@ function Doctors() {
   }, [city, specialty, searchQuery, doctors]);
 
   const toggleBookmark = async (doctorId) => {
-    const token = localStorage.getItem("token");
-    try {
-      if (!isBookmarked[doctorId]) {
-        await axios.post(`http://localhost:8000/api/bookmarks`,
-          { doctor_id: doctorId },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        await axios.delete(`http://localhost:8000/api/bookmarks/${doctorId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
+  const token = localStorage.getItem("token");
+  try {
+    if (!isBookmarked[doctorId]) {
+      await axios.post(
+        `http://localhost:8000/api/patient/bookmarks/${doctorId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } else {
+      await axios.delete(
+        `http://localhost:8000/api/patient/bookmarks/${doctorId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
 
       setIsBookmarked(prev => ({
-        ...prev,
-        [doctorId]: !prev[doctorId]
-      }));
-    } catch (error) {
-      console.error("Error toggling bookmark:", error);
-    }
-  };
-
+      ...prev,
+      [doctorId]: !prev[doctorId]
+    }));
+  } catch (error) {
+    console.error("Error toggling bookmark:", error);
+  }
+};
   const clearFilters = () => {
     setCity("");
     setSpecialty("");
@@ -194,67 +196,89 @@ function Doctors() {
         )}
 
         {!loading && filteredDoctors.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDoctors.map((doc) => (
-              <div key={doc.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">Dr. {doc.name}</h3>
-                        <p className="text-blue-600 font-medium">{doc.specialty || "General Practitioner"}</p>
-                        <div className="flex items-center mt-1">
-                          <div className="flex text-yellow-400">
-                            {[...Array(5)].map((_, i) => (
-                              <StarIcon key={i} className="h-4 w-4 fill-current" />
-                            ))}
-                          </div>
-                          <span className="text-gray-500 text-sm ml-2">4.8 (120)</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => toggleBookmark(doc.id)}
-                      className={`p-2 rounded-full ${
-                        isBookmarked[doc.id]
-                          ? 'text-red-500 bg-red-50'
-                          : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
-                      }`}
-                    >
-                      <HeartIcon className={`h-5 w-5 ${isBookmarked[doc.id] ? 'fill-current' : ''}`} />
-                    </button>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {filteredDoctors.map((doc) => (
+      <div 
+        key={doc.id} 
+        className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col border border-gray-100"
+      >
+        <div className="p-6 flex-grow">
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-4">
+              {doc.photo_url ? (
+                <img 
+                  src={doc.photo_url} 
+                  alt={`Dr. ${doc.name}`}
+                  className="w-16 h-16 rounded-xl object-cover border-2 border-gray-100"
+                />
+              ) : (
+                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center">
+                  <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                </div>
+              )}
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Dr. {doc.name}</h3>
+                <p className="text-blue-600 font-medium">{doc.specialty || "General Practitioner"}</p>
+                <div className="flex items-center mt-1">
+                  <div className="flex text-yellow-400">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon 
+                        key={i} 
+                        className={`h-4 w-4 ${i < 4 ? 'fill-current' : 'text-gray-300'}`} 
+                      />
+                    ))}
                   </div>
-
-                  <div className="mt-6 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <MapPinIcon className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Location</p>
-                        <p className="font-medium">{doc.city || "City not specified"}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="bg-green-100 p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Availability</p>
-                        <p className="font-medium">{doc.availability || "Check schedule"}</p>
-                      </div>
-                    </div>
-                  </div>
+                  <span className="text-gray-500 text-sm ml-2">4.8 (120)</span>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <button
+              onClick={() => toggleBookmark(doc.id)}
+              className={`p-2 rounded-full ${
+                isBookmarked[doc.id]
+                  ? 'text-red-500 bg-red-50'
+                  : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+              }`}
+            >
+              <HeartIcon className={`h-5 w-5 ${isBookmarked[doc.id] ? 'fill-current' : ''}`} />
+            </button>
           </div>
-        )}
+
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-100 p-2 rounded-lg">
+                <MapPinIcon className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Location</p>
+                <p className="font-medium">{doc.city || "City not specified"}</p>
+              </div>
+            </div>
+
+            
+          </div>
+
+          {/* Buttons section */}
+          <div className="flex gap-2 mt-6">
+            <Link
+              to={`/doctor/${doc.id}`}
+              className="flex-1 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+            >
+              View Profile
+            </Link>
+            <Link
+              to={`/book/${doc.id}`}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+            >
+              Book Now
+            </Link>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
       </div>
 )}
 
