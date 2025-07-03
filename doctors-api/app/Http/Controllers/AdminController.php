@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -136,6 +137,7 @@ class AdminController extends Controller
     {
         return response()->json([
             'total_users' => User::count(),
+            'pending_reviews' => Review::where('status', 'pending')->count(),
             'admins' => User::where('role', 'admin')->count(),
             'doctors' => User::where('role', 'doctor')->count(),
             'patients' => User::where('role', 'patient')->count(),

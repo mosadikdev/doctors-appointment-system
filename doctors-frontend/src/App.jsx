@@ -11,7 +11,8 @@ import {
   UserPlusIcon,
   QueueListIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -29,6 +30,9 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import DoctorAvailability from './pages/DoctorAvailability';
 import DoctorProfile from './pages/DoctorProfile';
+import AdminLayout from './components/AdminLayout';
+import ErrorBoundary from './components/ErrorBoundary';
+import AdminReviews from './pages/AdminReviews';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -98,11 +102,12 @@ function App() {
               ) : (
                 <div className="flex items-center space-x-6">
                   {user?.role === 'admin' && (
-                    <>
-                      {renderNavLink('/admin', 'Dashboard', QueueListIcon)}
-                      {renderNavLink('/admin/users', 'Manage Users', UserGroupIcon)}
-                    </>
-                  )}
+  <>
+    {renderNavLink('/admin', 'Dashboard', QueueListIcon)}
+    {renderNavLink('/admin/users', 'Manage Users', UserGroupIcon)}
+    {renderNavLink('/admin/reviews', 'Review Management', ChatBubbleLeftIcon)}
+  </>
+)}
 
                   {user?.role === 'patient' && (
                     <>
@@ -203,6 +208,7 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1">
+        <ErrorBoundary>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -226,10 +232,12 @@ function App() {
         <Route path="/admin/users" element={<AdminDashboard />} />
         <Route path="/admin/add-user" element={<AddUser />} />
         <Route path="/admin/edit-user/:id" element={<EditUser />} />
+        <Route path="/admin/reviews" element={<AdminReviews />} />
 
 
         <Route path="/profile" element={<Profile />} />
       </Routes>
+      </ErrorBoundary>
       </main>
     </div>
   );

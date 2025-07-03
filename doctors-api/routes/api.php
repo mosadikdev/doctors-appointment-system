@@ -8,7 +8,8 @@ use App\Http\Controllers\{
     PatientController,
     AppointmentController,
     AvailabilityController,
-    DoctorAvailabilityController
+    DoctorAvailabilityController,
+    ReviewController
 };
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -30,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
 
+    Route::get('/doctors/{doctor}/reviews', [ReviewController::class, 'doctorReviews']);
+
     // Admin routes
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', fn() => response()->json(['message' => 'Hello admin']));
@@ -39,6 +42,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
         Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
         Route::get('/admin/stats', [AdminController::class, 'getStats']);
+
+        Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
+    Route::put('/admin/reviews/{review}/status', [ReviewController::class, 'updateStatus']);
+        Route::get('/admin/reviews/pending', [ReviewController::class, 'pending']);
+        Route::put('/admin/reviews/{review}/status', [ReviewController::class, 'updateStatus']);
+
+        
     });
 
     // Doctor routes
@@ -52,6 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/availability/{id}', [AvailabilityController::class, 'destroy']);
         Route::post('/doctor/availability', [DoctorAvailabilityController::class, 'store']);
         Route::get('/doctor/stats', [DoctorController::class, 'getStats']);
+
+        
     });
 
     // Patient routes
@@ -70,5 +82,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patient/bookmarks', [PatientController::class, 'savedDoctors']);
         Route::post('/patient/bookmarks/{doctor}', [PatientController::class, 'bookmarkDoctor']);
         Route::delete('/patient/bookmarks/{doctor}', [PatientController::class, 'removeBookmark']);
+
+
+        Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->middleware('role:admin,doctor');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
     });
 });

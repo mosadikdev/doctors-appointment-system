@@ -195,43 +195,49 @@ function Doctors({  }) {
           </div>
         )}
 
-        {!loading && filteredDoctors.length > 0 && (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {filteredDoctors.map((doc) => (
-      <div 
-        key={doc.id} 
-        className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col border border-gray-100"
-      >
-        <div className="p-6 flex-grow">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              {doc.photo_url ? (
-                <img 
-                  src={doc.photo_url} 
-                  alt={`Dr. ${doc.name}`}
-                  className="w-16 h-16 rounded-xl object-cover border-2 border-gray-100"
-                />
-              ) : (
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center">
-                  <UserCircleIcon className="h-8 w-8 text-gray-400" />
-                </div>
-              )}
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Dr. {doc.name}</h3>
-                <p className="text-blue-600 font-medium">{doc.specialty || "General Practitioner"}</p>
-                <div className="flex items-center mt-1">
-                  <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon 
-                        key={i} 
-                        className={`h-4 w-4 ${i < 4 ? 'fill-current' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-gray-500 text-sm ml-2">4.8 (120)</span>
-                </div>
-              </div>
-            </div>
+       {!loading && filteredDoctors.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredDoctors.map((doc) => {
+              const rating = doc.rating || 0;
+              const reviewsCount = doc.reviewsCount || 0;
+              
+              return (
+                <div 
+                  key={doc.id} 
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col border border-gray-100"
+                >
+                  <div className="p-6 flex-grow">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-4">
+                        {doc.photo_url ? (
+                          <img 
+                            src={doc.photo_url} 
+                            alt={`Dr. ${doc.name}`}
+                            className="w-16 h-16 rounded-xl object-cover border-2 border-gray-100"
+                          />
+                        ) : (
+                          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center">
+                            <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900">Dr. {doc.name}</h3>
+                          <p className="text-blue-600 font-medium">{doc.specialty || "General Practitioner"}</p>
+                          <div className="flex items-center mt-1">
+                            <div className="flex text-yellow-400">
+                              {[...Array(5)].map((_, i) => (
+                                <StarIcon 
+                                  key={i} 
+                                  className={`h-4 w-4 ${i < Math.round(rating) ? 'fill-current' : 'text-gray-300'}`} 
+                                />
+                              ))}
+                            </div>
+                            <span className="text-gray-500 text-sm ml-2">
+                              {rating.toFixed(1)} ({reviewsCount})
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
             <button
               onClick={() => toggleBookmark(doc.id)}
@@ -276,7 +282,7 @@ function Doctors({  }) {
           </div>
         </div>
       </div>
-    ))}
+    )})}
   </div>
 )}
       </div>

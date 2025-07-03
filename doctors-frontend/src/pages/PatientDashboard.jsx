@@ -193,60 +193,63 @@ function PatientDashboard() {
         {/* Saved Doctors */}
        <Section title="Your Favorite Doctors" link="/doctors">
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    {savedDoctors.length === 0 ? (
-      <p className="text-gray-500">You have no saved doctors.</p>
-    ) : (
-      savedDoctors.map((doctor) => (
-        <div
-          key={doctor.id}
-          className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-start gap-4">
-            <img
-              src={doctor.photo || "/placeholder.png"}
-              alt={doctor.name}
-              className="w-16 h-16 rounded-xl object-cover"
-            />
-            <div>
-              <h3 className="font-semibold text-gray-900">
-                Dr. {doctor.name}
-              </h3>
-              <p className="text-sm text-gray-600">{doctor.specialty}</p>
-              <div className="flex items-center mt-2">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`w-4 h-4 fill-current ${i < Math.round(doctor.rating || 4.5) ? "" : "text-gray-300"}`}
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="text-gray-500 text-sm ml-2">
-                  {(doctor.rating || 4.5).toFixed(1)} ({(doctor.reviewsCount || 12)})
-                </span>
-              </div>
+    {savedDoctors.map((doctor) => {
+  // Convert rating to number and handle null/undefined
+  const rating = parseFloat(doctor.rating);
+  const displayRating = isNaN(rating) ? 4.5 : rating;
+  const reviewCount = doctor.reviewsCount || 12;
+  
+  return (
+    <div
+      key={doctor.id}
+      className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-start gap-4">
+        <img
+          src={doctor.photo || "/placeholder.png"}
+          alt={doctor.name}
+          className="w-16 h-16 rounded-xl object-cover"
+        />
+        <div>
+          <h3 className="font-semibold text-gray-900">
+            Dr. {doctor.name}
+          </h3>
+          <p className="text-sm text-gray-600">{doctor.specialty}</p>
+          <div className="flex items-center mt-2">
+            <div className="flex text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-4 h-4 fill-current ${i < Math.round(displayRating) ? "" : "text-gray-300"}`}
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              ))}
             </div>
-          </div>
-          <div className="flex gap-2 mt-4">
-            <Link
-              to={`/doctor/${doctor.id}`}
-              className="flex-1 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
-            >
-              View Profile
-            </Link>
-            <Link
-              to={`/book/${doctor.id}`}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
-            >
-              Book Now
-            </Link>
+            <span className="text-gray-500 text-sm ml-2">
+              {displayRating.toFixed(1)} ({reviewCount})
+            </span>
           </div>
         </div>
-      ))
-    )}
+      </div>
+      <div className="flex gap-2 mt-4">
+        <Link
+          to={`/doctor/${doctor.id}`}
+          className="flex-1 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+        >
+          View Profile
+        </Link>
+        <Link
+          to={`/book/${doctor.id}`}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+        >
+          Book Now
+        </Link>
+      </div>
+    </div>
+  );
+})}
   </div>
 </Section>
       </div>

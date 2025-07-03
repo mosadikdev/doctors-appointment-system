@@ -5,7 +5,9 @@ import Spinner from "../components/Spinner";
 import { 
   UsersIcon, 
   ShieldCheckIcon, 
-  ChartBarIcon 
+  ChartBarIcon ,
+  ChatBubbleLeftRightIcon , 
+  ChatBubbleLeftIcon 
 } from "@heroicons/react/24/outline";
 
 function AdminHome() {
@@ -58,7 +60,7 @@ function AdminHome() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <>
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
@@ -79,6 +81,12 @@ function AdminHome() {
             icon={<UsersIcon className="h-6 w-6 text-white" />}
             color="bg-blue-600"
           />
+          <StatCard 
+  title="Pending Reviews"
+  value={stats.pending_reviews || 0}
+  icon={<ChatBubbleLeftIcon className="h-6 w-6 text-white" />}
+  color="bg-yellow-600"
+/>
         </div>
 
         {/* Management Cards */}
@@ -93,7 +101,7 @@ function AdminHome() {
           
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

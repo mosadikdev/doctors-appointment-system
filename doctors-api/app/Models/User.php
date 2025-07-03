@@ -136,10 +136,7 @@ class User extends Authenticatable
     /**
      * Get doctor's reviews
      */
-    public function reviews()
-{
-    return $this->hasMany(Review::class, 'doctor_id');
-}
+
 
     /**
      * Get the URL for the user's profile photo
@@ -186,4 +183,32 @@ class User extends Authenticatable
 
 
     
+    public function reviews()
+{
+    return $this->hasMany(Review::class, 'doctor_id');
+}
+
+public function getReviewsAvgRatingAttribute()
+{
+    return $this->reviews()->approved()->avg('rating') ?? 0;
+}
+
+public function getReviewsCountAttribute()
+{
+    return $this->reviews()->approved()->count();
+}
+
+public function givenReviews()
+{
+    return $this->hasMany(Review::class, 'patient_id');
+}
+
+public function recalculateRating()
+{
+    $this->reviews_avg_rating = $this->reviews()
+        ->where('status', 'approved')
+        ->avg('rating');
+    
+    $this->save();
+}
 }
