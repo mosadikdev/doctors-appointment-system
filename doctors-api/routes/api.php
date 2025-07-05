@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/stats', [AdminController::class, 'getStats']);
 
         Route::get('/admin/reviews', [ReviewController::class, 'adminIndex']);
-    Route::put('/admin/reviews/{review}/status', [ReviewController::class, 'updateStatus']);
+        Route::put('/admin/reviews/{review}/status', [ReviewController::class, 'updateStatus']);
         Route::get('/admin/reviews/pending', [ReviewController::class, 'pending']);
         Route::put('/admin/reviews/{review}/status', [ReviewController::class, 'updateStatus']);
 
