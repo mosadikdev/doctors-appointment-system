@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { CalendarIcon, ClockIcon, UserIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { 
+  CalendarIcon, 
+  ClockIcon, 
+  UserIcon, 
+  CheckCircleIcon, 
+  XCircleIcon 
+} from "@heroicons/react/24/outline";
 
 function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -270,143 +276,169 @@ function MyAppointments() {
           )}
 
           {/* Appointments List */}
-          {!loading && filteredAppointments.length > 0 && (
-            <div className="space-y-4">
-              {filteredAppointments.map((app) => (
-                <div 
-                  key={app.id}
-                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  <div 
-                    className="p-5 cursor-pointer"
-                    onClick={() => toggleAppointmentDetails(app.id)}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-start gap-4">
-                        <div className="bg-blue-100 p-3 rounded-lg">
-                          <CalendarIcon className="h-6 w-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-gray-900">
-                            {role === "doctor" 
-                              ? `Patient: ${app.patient?.name || "Unknown"}`
-                              : `Dr. ${app.doctor?.name || "Unknown"}`}
-                          </h3>
-                          <div className="flex flex-wrap gap-3 mt-2">
-                            <span className="inline-flex items-center gap-1 text-sm text-gray-600">
-                              <CalendarIcon className="h-4 w-4" />
-                              {formatDate(app.appointment_date)}
-                            </span>
-                            <span className="inline-flex items-center gap-1 text-sm text-gray-600">
-                              <ClockIcon className="h-4 w-4" />
-                              {app.appointment_time}
-                            </span>
-                            <span className={`inline-flex items-center text-sm px-2.5 py-0.5 rounded-full ${getStatusColor(app.status)}`}>
-                              {app.status}
-                            </span>
-                          </div>
-                        </div>
+         {!loading && filteredAppointments.length > 0 && (
+        <div className="space-y-4">
+          {filteredAppointments.map((app) => (
+            <div 
+              key={app.id}
+              className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div 
+                className="p-5 cursor-pointer"
+                onClick={() => toggleAppointmentDetails(app.id)}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                      <CalendarIcon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">
+                        {role === "doctor" 
+                          ? `Patient: ${app.patient?.name || "Unknown"}`
+                          : `Dr. ${app.doctor?.name || "Unknown"}`}
+                      </h3>
+                      <div className="flex flex-wrap gap-3 mt-2">
+                        <span className="inline-flex items-center gap-1 text-sm text-gray-600">
+                         <CalendarIcon className="h-4 w-4" />
+                          {formatDate(app.appointment_date)}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-sm text-gray-600">
+                          <ClockIcon className="h-4 w-4" />
+                          {app.appointment_time}
+                        </span>
+                        <span className={`inline-flex items-center text-sm px-2.5 py-0.5 rounded-full ${getStatusColor(app.status)}`}>
+                          {app.status}
+                        </span>
                       </div>
-                      
-                      <button 
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        onClick={() => toggleAppointmentDetails(app.id)}
-                      >
-                        {expandedAppointment === app.id ? "Hide Details" : "View Details"}
-                      </button>
                     </div>
                   </div>
                   
+                  <button 
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    onClick={() => toggleAppointmentDetails(app.id)}
+                  >
+                    {expandedAppointment === app.id ? "Hide Details" : "View Details"}
+                  </button>
+                </div>
+              </div>
+                  
                   {expandedAppointment === app.id && (
-                    <div className="px-5 pb-5 border-t border-gray-100 pt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-3">Appointment Details</h4>
-                          <div className="space-y-3">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Appointment ID:</span>
-                              <span className="font-medium">#{app.id}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Date & Time:</span>
-                              <span className="font-medium">
-                                {formatDate(app.appointment_date)} at {app.appointment_time}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Duration:</span>
-                              <span className="font-medium">30 minutes</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Status:</span>
-                              <span className={`font-medium ${getStatusColor(app.status).replace('bg-', 'text-').split(' ')[0]}`}>
-                                {app.status}
-                              </span>
-                            </div>
-                          </div>
+                <div className="px-5 pb-5 border-t border-gray-100 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-3">Appointment Details</h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Date & Time:</span>
+                          <span className="font-medium">
+                            {formatDate(app.appointment_date)} at {app.appointment_time}
+                          </span>
                         </div>
+                            <div className="flex justify-between">
+                          <span className="text-gray-600">Duration:</span>
+                          <span className="font-medium">30 minutes</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <span className={`font-medium ${getStatusColor(app.status).replace('bg-', 'text-').split(' ')[0]}`}>
+                            {app.status}
+                          </span>
+                        </div>
+                            <div className="flex justify-between">
+                          <span className="text-gray-600">Reason:</span>
+                          <span className="font-medium">
+                            {app.reason || "General consultation"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                         
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-3">
-                            {role === "doctor" ? "Patient Information" : "Doctor Information"}
-                          </h4>
-                          <div className="flex items-start gap-4">
-                            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                            <div>
-                              <h5 className="font-medium text-gray-900">
-                                {role === "doctor" 
-                                  ? app.patient?.name || "Unknown"
-                                  : `Dr. ${app.doctor?.name || "Unknown"}`}
-                              </h5>
-                              <p className="text-gray-600 text-sm mt-1">
-                                {role === "doctor" 
-                                  ? `Email: ${app.patient?.email || "N/A"}`
-                                  : app.doctor?.specialty || "General Practitioner"}
-                              </p>
-                              <p className="text-gray-600 text-sm">
-                                {role === "doctor" 
-                                  ? `Phone: ${app.patient?.phone || "N/A"}`
-                                  : `Location: ${app.doctor?.city || "N/A"}`}
-                              </p>
-                            </div>
+                      <h4 className="font-medium text-gray-900 mb-3">
+                        {role === "doctor" ? "Patient Information" : "Doctor Information"}
+                      </h4>
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="space-y-3">
+                          <div>
+                            <h5 className="font-medium text-gray-900">
+                              {role === "doctor" 
+                                ? app.patient?.name || "Unknown"
+                                : `Dr. ${app.doctor?.name || "Unknown"}`}
+                            </h5>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <span className="text-gray-600 text-sm font-medium w-24">Specialty:</span>
+                            <span className="text-gray-600 text-sm">
+                              {role === "doctor" 
+                                ? "Patient"
+                                : app.doctor?.specialty || "General Practitioner"}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <span className="text-gray-600 text-sm font-medium w-24">Contact:</span>
+                            <span className="text-gray-600 text-sm">
+                              {role === "doctor" 
+                                ? app.patient?.email || "N/A"
+                                : app.doctor?.email || "N/A"}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <span className="text-gray-600 text-sm font-medium w-24">Phone:</span>
+                            <span className="text-gray-600 text-sm">
+                              {role === "doctor" 
+                                ? app.patient?.phone || "N/A"
+                                : app.doctor?.phone || "N/A"}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-start">
+                            <span className="text-gray-600 text-sm font-medium w-24">Location:</span>
+                            <span className="text-gray-600 text-sm">
+                              {role === "doctor" 
+                                ? app.patient?.city || "N/A"
+                                : app.doctor?.city || "N/A"}
+                            </span>
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
                       
                       {role === "doctor" && app.status.toLowerCase() === "pending" && (
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-                          <button
-                            onClick={() => handleConfirm(app.id)}
-                            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
-                          >
-                            <CheckCircleIcon className="h-5 w-5" />
-                            Confirm Appointment
-                          </button>
-                          <button
-                            onClick={() => handleCancel(app.id)}
-                            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
-                          >
-                            <XCircleIcon className="h-5 w-5" />
-                            Cancel Appointment
-                          </button>
-                        </div>
-                      )}
+                    <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+                      <button
+                        onClick={() => handleConfirm(app.id)}
+                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                      >
+                        <CheckCircleIcon className="h-5 w-5" />
+                        Confirm Appointment
+                      </button>
+                      <button
+                        onClick={() => handleCancel(app.id)}
+                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                      >
+                        <XCircleIcon className="h-5 w-5" />
+                        Cancel Appointment
+                      </button>
+                    </div>
+                  )}
                       
                       {role === "patient" && app.status.toLowerCase() !== "cancelled" && (
-                        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-                          {app.status.toLowerCase() !== "completed" && (
-                            <button
-                              onClick={() => handleCancel(app.id)}
-                              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
-                            >
-                              <XCircleIcon className="h-5 w-5" />
-                              Cancel Appointment
-                            </button>
-                          )}
-                          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">
-                            View Details
-                          </button>
-                        </div>
+                    <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+                      {app.status.toLowerCase() !== "completed" && (
+                        <button
+                          onClick={() => handleCancel(app.id)}
+                          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+                        >
+                          <XCircleIcon className="h-5 w-5" />
+                          Cancel Appointment
+                        </button>
+                      )}
+                    </div>
                       )}
                     </div>
                   )}
@@ -415,11 +447,9 @@ function MyAppointments() {
             </div>
           )}
         </div>
-
-        
-        
       </div>
     </div>
   );
 };
+
 export default MyAppointments;

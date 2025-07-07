@@ -33,6 +33,7 @@ import DoctorProfile from './pages/DoctorProfile';
 import AdminLayout from './components/AdminLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminReviews from './pages/AdminReviews';
+import AppointmentDetails from './pages/AppointmentDetails';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -226,6 +227,7 @@ function App() {
             <Route path="/book" element={<BookAppointment />} />
             <Route path="/book/:doctorId" element={<BookAppointment />} />
             <Route path="/my-appointments" element={<MyAppointments />} />
+            <Route path="/appointment/:id" element={<AppointmentDetails />} />
 
             <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
             <Route path="/doctor/appointments" element={<DoctorAppointments />} />
