@@ -50,11 +50,18 @@ export default function Profile() {
   try {
     const formData = new FormData();
     
-    Object.keys(form).forEach(key => {
-      if (form[key] !== storedUser[key]) {
-        formData.append(key, form[key]);
-      }
-    });
+    formData.append('name', form.name);
+    formData.append('email', form.email);
+    
+    if (form.phone !== storedUser.phone) formData.append('phone', form.phone);
+    if (form.gender !== storedUser.gender) formData.append('gender', form.gender);
+    if (form.specialty !== storedUser.specialty) formData.append('specialty', form.specialty);
+    if (form.city !== storedUser.city) formData.append('city', form.city);
+    
+    if (form.password) {
+      formData.append('password', form.password);
+      formData.append('password_confirmation', form.password_confirmation);
+    }
     
     if (previewAvatar) {
       const fileInput = document.getElementById('avatar-upload');
@@ -126,15 +133,15 @@ export default function Profile() {
       className="w-full h-full object-cover"
     />
   ) : avatar ? (
-    <img 
-      src={`${avatar}?t=${new Date().getTime()}`} 
-      alt="Profile" 
-      className="w-full h-full object-cover"
-      onError={(e) => {
-        e.target.onerror = null; 
-        e.target.src = "/placeholder.png";
-      }}
-    />
+   <img 
+  src={`${avatar}?t=${new Date().getTime()}`} 
+  alt="Profile" 
+  className="w-full h-full object-cover"
+  onError={(e) => {
+    e.target.onerror = null; 
+    e.target.src = "/placeholder.png";
+  }}
+/>
   ) : (
     <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
       <UserIcon className="h-16 w-16 text-indigo-500" />

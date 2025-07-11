@@ -107,8 +107,11 @@ class AuthController extends Controller
 
     if ($request->hasFile('avatar')) {
         if ($user->photo_url) {
-            if (strpos($user->photo_url, 'profile-photos') !== false) {
-                Storage::disk('public')->delete($user->photo_url);
+            $path = parse_url($user->photo_url, PHP_URL_PATH);
+            $filePath = str_replace('/storage/', '', $path);
+            
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
             }
         }
         
