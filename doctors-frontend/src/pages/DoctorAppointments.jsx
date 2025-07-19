@@ -42,7 +42,6 @@ function DoctorAppointments() {
   useEffect(() => {
     const now = new Date();
     
-    // Calculate date range: 30 days ago to 30 days from now
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
@@ -51,13 +50,11 @@ function DoctorAppointments() {
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
     const thirtyDaysFromNowStr = thirtyDaysFromNow.toISOString().split('T')[0];
     
-    // Filter appointments within the 30-day window
     let filtered = appointments.filter(app => 
       app.appointment_date >= thirtyDaysAgoStr && 
       app.appointment_date <= thirtyDaysFromNowStr
     );
     
-    // Apply status filter
     if (activeFilter !== "all") {
       if (activeFilter === "active") {
         filtered = filtered.filter(app => 
@@ -183,7 +180,6 @@ function DoctorAppointments() {
           </div>
         )}
 
-        {/* Filter Panel */}
         {showFilters && (
           <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
             <h3 className="font-medium text-gray-900 mb-3">Filter Appointments</h3>
@@ -252,7 +248,6 @@ function DoctorAppointments() {
           </div>
         )}
 
-        {/* Stats Summary */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <p className="text-sm text-gray-600">Total</p>
