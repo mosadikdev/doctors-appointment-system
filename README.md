@@ -46,9 +46,9 @@ A full-stack web application that allows patients to book appointments with doct
 
 
 ![Homepage](./screenshots/home.JPG)
-![Doctor Profile](./screenshots/Doctor%20Profile.JPG)
-![Admin Dashboard](./screenshots/Admin%20Dashboard.JPG)
-![Booking Page](./screenshots/Booking%20Page.JPG)
+![Doctor Profile](./screenshots/DoctorProfile.JPG)
+![Admin Dashboard](./screenshots/AdminDashboard.JPG)
+![Booking Page](./screenshots/BookingPage.JPG)
 
 ---
 
